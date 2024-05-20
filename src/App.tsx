@@ -19,13 +19,10 @@ const App = () => {
       app_url: "https://phantom.app",
       redirect_link: " https://t.me/mpc_wallet_connect_bot/tobi_wallet",
     });
-    
-    console.log("params", params.toString());
-
     const url = buildUrl("connect", params);
     console.log("url", url);
     window.open(url);
   };
-  return <button onClick={() => onConnect()}>Connect Phantom</button>;
+  return <button onClick={() => onConnect()}>Connect Phantom Wallet</button>;
 };
 export default App;
