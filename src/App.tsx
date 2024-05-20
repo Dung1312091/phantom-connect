@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import bs58 from "bs58";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import nacl from "tweetnacl";
 
 const App = () => {
-  console.log("start app", (window as any)?.Telegram?.WebApp?.initDataUnsafe)
+  useEffect(()=> {
+    console.log('----------------------------------------------------------------')
+    console.log("start app", (window as any)?.Telegram)
+
+  }, [])
   const [dappKeyPair] = useState(nacl.box.keyPair());
   const buildUrl = (path: string, params: URLSearchParams) =>
     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
