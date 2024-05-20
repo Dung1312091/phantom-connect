@@ -25,7 +25,7 @@ const DappConnect = () => {
     console.log("url", url);
     window.open(url);
   };
-  return <button onClick={() => onConnect()}>Connect Phantom Wallet</button>;
+  return <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>;
 };
 
 const App = () => {
