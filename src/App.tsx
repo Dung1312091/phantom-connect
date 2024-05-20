@@ -18,8 +18,7 @@ const DappConnect = () => {
       dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
       cluster: "mainnet-beta",
       app_url: "https://phantom.app",
-      redirect_link:
-        " https://t.me/mpc_wallet_connect_bot/tobi_wallet?startapp=",
+      redirect_link: "https://www.google.com.vn/",
     });
     const url = buildUrl("connect", params);
     console.log("url", url);
