@@ -3,12 +3,13 @@ import bs58 from "bs58";
 import { useEffect, useState } from "react";
 import nacl from "tweetnacl";
 
-const App = () => {
-  useEffect(()=> {
-    console.log('----------------------------------------------------------------')
-    console.log("start app", (window as any)?.Telegram)
-
-  }, [])
+const DappConnect = () => {
+  useEffect(() => {
+    console.log(
+      "----------------------------------------------------------------"
+    );
+    console.log("start app", (window as any)?.Telegram);
+  }, []);
   const [dappKeyPair] = useState(nacl.box.keyPair());
   const buildUrl = (path: string, params: URLSearchParams) =>
     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
@@ -24,5 +25,9 @@ const App = () => {
     window.open(url);
   };
   return <button onClick={() => onConnect()}>Connect Phantom Wallet</button>;
+};
+
+const App = () => {
+  return <DappConnect />;
 };
 export default App;
