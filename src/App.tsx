@@ -120,8 +120,10 @@ import { EthereumProvider } from "@walletconnect/ethereum-provider";
 export const App = () => {
   // const [isConnecting, setIsConnecting] = useState(false);
   const [provider, setProvider] = useState<any>(undefined);
-  console.log("🚀 ~ App ~ provider:", provider);
-  console.log("----------------", provider?.session);
+  // console.log("🚀 ~ App ~ provider:", provider);
+  console.log("----------------session", provider?.session);
+  console.log("-----signer", provider.signer);
+  console.log("-----isWalletConnect", provider.isWalletConnect);
   // const [uri, setUri] = useState("");
   // const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
