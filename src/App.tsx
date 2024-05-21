@@ -122,8 +122,8 @@ export const App = () => {
   const [provider, setProvider] = useState<any>(undefined);
   // console.log("🚀 ~ App ~ provider:", provider);
   console.log("----------------session", provider?.session);
-  console.log("-----signer", provider.signer);
-  console.log("-----isWalletConnect", provider.isWalletConnect);
+  console.log("-----signer", provider?.signer);
+  console.log("-----isWalletConnect", provider?.isWalletConnect);
   // const [uri, setUri] = useState("");
   // const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
