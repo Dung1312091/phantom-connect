@@ -5,7 +5,7 @@ import { Buffer } from "buffer";
 import { useState } from "react";
 import nacl from "tweetnacl";
 const DATA =
-  "phantom_encryption_public_key=6uB6ETL7Une1w3qKmEgFaNUhpzwh3NFspStVNQ7EKVom&nonce=NASDKXnjwVEZPkABDBsjrK3wBK6Y3nk8d&data=6AwEGT3zCQ72DHRXmxVpNrThANwu6MjJ4iWYA3Lv5ovKXkAuPEquHBbrYuFRKFcFQbsa6ALjsLoEccjzz8ZkCFFm26W9VtjHQXDPx2yB5Y2Fz8prMApkBDLfBXNCZFqkWwywJLhue58jJzeLCubm6ywDoDoXmjVMy8CwwCgsoDYejz6XXKuVmJzDxFGppmgMA9avcTn8cqizDi2CE6PGrier89b3HxbpyeHZUunPJqPpnCZwZ3BgMZG6kDpGtyWpxvzDDef5bV2dx4RjngoacEe2WXAC2LBvc7LzbFdduF7HGHTE5rpxWHofVfhQN5pszCktEqRbk8JuW2D8X3TxrPibywTa6T358WBJRH8kNisq9zfam8VHECceTUwCJgLCh2foaEo8TmjNdb3KfXSkSjRK8ZSvkFk9KAtXpswmHykBnaez&gfe_rd=mr&pli=1";
+  "phantom_encryption_public_key=JAgRqyJja9Y694ayFWc4HnbKiJPmMCbdpBoyYbg5CLTS&nonce=7XeUnuxFfeE9atnGrKw9q9qkZTG5njPrD&data=3tg1zW9sVraqXcoAo21tiSpLkscynYjLLhiVfzzJWBWPdNZXQrQM4rW1pVKgn8WctA4S7rALkMcwjuWoTXRaebbtcPnP74h5Xy9SRFS9tCftRFoZBAZq1dt3Q14DW7SxzzfhvFtiNwVLY1EnxDnCfSNeg4WJYRnMctDmQdWBwGw9dFNGwHrpdWLHGsLooZTtCS5gr1Y114zUeZQCvVKjxfXDdyUzj1eTxZLQjm4cps9nMWXwJYRpsDMgUFa8L5Hc7xcp6QH7uBfyvd5v5YYe9PxFhovxribmxisaQYyUVKFtira73rUNzkpFx2SxW4kYWPKU267cwGvgSQrCXnjuxigz49xZ6bVpVSoNWuqtqiQFm3iBvx7pnaMSLc1KPVGtK1fHvxAmWrn6QTm6mG6zB65eGcybbQCmPRSNEwCSS9awtumb&gfe_rd=mr&pli=1";
 export const decodeBase64 = (b64: string) =>
   Uint8Array.from(atob(b64), (b) => b.charCodeAt(0));
 export const encodeBase64 = (b: any) =>
@@ -17,10 +17,20 @@ const KeyPair = {
 };
 
 const DappConnect = () => {
-  const [dappKeyPair] = useState({
-    publicKey: decodeBase64(KeyPair.publicKey),
-    secretKey: decodeBase64(KeyPair.secretKey),
-  });
+  // const [dappKeyPair] = useState({
+  //   publicKey: decodeBase64(KeyPair.publicKey),
+  //   secretKey: decodeBase64(KeyPair.secretKey),
+  // });
+  const [dappKeyPair] = useState(nacl.box.keyPair());
+  console.log("🚀 ~ DappConnect ~ dappKeyPair:", dappKeyPair);
+  const publicKey = encodeBase64(dappKeyPair.publicKey);
+  const secretKey = encodeBase64(dappKeyPair.secretKey);
+  console.log("🚀 ~ DappConnect ~ secretKey:", secretKey);
+  const xpublicKey = decodeBase64(publicKey);
+  console.log("🚀 ~ DappConnect ~ xpublicKey:", xpublicKey);
+  console.log("🚀 ~ DappConnect ~ xpublicKey:", xpublicKey);
+  const xsecretKey = decodeBase64(secretKey);
+  console.log("🚀 ~ DappConnect ~ xsecretKey:", xsecretKey);
 
   const buildUrl = (path: string, params: URLSearchParams) =>
     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
@@ -47,6 +57,7 @@ const DappConnect = () => {
       bs58.decode(nonce),
       sharedSecret
     );
+    console.log("🚀 ~ DappConnect ~ decryptedData:", decryptedData);
     if (!decryptedData) {
       throw new Error("Unable to decrypt data");
     }
@@ -74,11 +85,7 @@ const DappConnect = () => {
       bs58.decode(params.get("phantom_encryption_public_key")!),
       dappKeyPair.secretKey
     );
-    const connectData = decryptPayload(
-      params.get("data")!,
-      params.get("nonce")!,
-      sharedSecretDapp
-    );
+    const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
     console.log("🚀 ~ onTransfer ~ connectData:", connectData);
   };
 
@@ -86,6 +93,9 @@ const DappConnect = () => {
     <div>
       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
       <button onClick={() => onTransfer()}>Deposit Ton</button>
+      <button onClick={() => window.open("https://metamask.app.link/")}>
+        Open metamask
+      </button>
     </div>
   );
 };

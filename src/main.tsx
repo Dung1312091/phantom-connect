@@ -7,8 +7,4 @@ import { Buffer } from "buffer";
 import "./index.css";
 (globalThis as any).Buffer = Buffer;
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
