@@ -45,6 +45,14 @@ const DappConnect = () => {
     console.log("url", url);
     window.open(url);
   };
+  function openMetaMaskUrl(url: string) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_self";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
   const decryptPayload = (
     data: string,
     nonce: string,
@@ -93,7 +101,7 @@ const DappConnect = () => {
     <div>
       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
       <button onClick={() => onTransfer()}>Deposit Ton</button>
-      <button onClick={() => window.open("https://metamask.app.link/")}>
+      <button onClick={() => openMetaMaskUrl("https://metamask.app.link/")}>
         Open metamask
       </button>
     </div>
