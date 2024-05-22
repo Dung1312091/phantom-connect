@@ -19,12 +19,8 @@ const DATA =
   "phantom_encryption_public_key=64zdmwm7wDiz1HJjxkv67rqPvxJcA9xiX5jSJDM333b5&nonce=3nJ9Q25JHrCigaGBV28yPXhbzzVnhyS7c&data=ukMfUa7ghAUqzopNqpNkb1obw9npq5xh2L95Lw5g7kUNbRoCSvpQLd9MLvPoKEEWgVANZE9gVghpvG7VVJcKLd7BPEw5vTomabWn38g2bHY8QhxGR7SaL2e2HrdM9jxJe4TnHEdLuCiC1gBjUEDkXb1zSkKwEYV4hqbM66Cknby2ejb5Luh3Rt2ng1QupWW8CRDpxaGboPRZoCMDs71A3xSozn41aoD8eKWFPkXKHX7dZdq7mrUNDeC73PFhouch7CixabQTTaAaSSGS5XygMnfJVtYXWMv53c1Nn17mpdR4g3m9KqXh6w6SaCcdH8fhDszN8F8p86geFAVvqVwgzrEqjjxbqwSntqMkPyfuaC3K3a31XwAuo33ghdZBKPZsCoNkBfm35W2fekBbP6iFyTuWjEipgS6gwi3cx5Xo5kpnzv";
 
 function initKeyPairs(): nacl.BoxKeyPair {
-  const storedPublicKeyBase64 =
-    localStorage.getItem("publicKey") ||
-    "o3H7SeSmanVBxdzCse2EJRBY/FvJAqguCWJxYX8gSXg=";
-  const storedSecretKeyBase64 =
-    localStorage.getItem("secretKey") ||
-    "R75wNkFc2clRIhKiLMtP1tSjgVpwvUSadmSqS5kRKmE=";
+  const storedPublicKeyBase64 = localStorage.getItem("publicKey");
+  const storedSecretKeyBase64 = localStorage.getItem("secretKey");
   if (storedPublicKeyBase64 && storedSecretKeyBase64) {
     const storedPublicKey = decodeBase64(storedPublicKeyBase64);
     const storedSecretKey = decodeBase64(storedSecretKeyBase64);
