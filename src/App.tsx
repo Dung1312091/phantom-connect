@@ -12,7 +12,7 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 
 import {
   createTransferInstruction,
@@ -132,10 +132,10 @@ const Methods = {
   onDisconnect: "onDisconnect",
   onSignAndSendTransaction: "onSignAndSendTransaction",
 };
-
-const buildState = (method: string) => `${method}:${uuidv4()}`;
-
 const POOLING_ID = "121212";
+
+// const buildState = (method: string) => `${method}:${uuidv4()}`;
+const buildState = (method: string) => `${method}:${POOLING_ID}`;
 
 const DappConnect = () => {
   const connection = new Connection(NETWORK);
