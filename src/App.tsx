@@ -162,7 +162,7 @@ export const App = () => {
       const name = wallet?.name;
       if (walletUrl) {
         const href = CoreUtil.formatUniversalUrl(walletUrl, uri, name!);
-        (window as any).Telegram.webApp.openLink(href);
+        (window as any).Telegram.WebApp.openLink(href);
       }
     });
   }, [uri]);
@@ -221,7 +221,7 @@ export const App = () => {
           }
         }}
       >
-        Onclick
+        Onclick1
       </button>
     </div>
   );
