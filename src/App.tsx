@@ -142,27 +142,33 @@ const DappConnect = () => {
     return transaction;
   };
   const signAndSendTransaction = async () => {
-    const transaction = await createTransferTransaction();
+    try {
+      console.log("--------------------------------");
+      const transaction = await createTransferTransaction();
+      console.log("🚀 ~ signAndSendTransaction ~ transaction:", transaction);
 
-    const serializedTransaction = transaction.serialize({
-      requireAllSignatures: false,
-    });
+      const serializedTransaction = transaction.serialize({
+        requireAllSignatures: false,
+      });
 
-    const payload = {
-      session,
-      transaction: bs58.encode(serializedTransaction),
-    };
-    const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret);
+      const payload = {
+        session,
+        transaction: bs58.encode(serializedTransaction),
+      };
+      const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret);
 
-    const params = new URLSearchParams({
-      dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
-      nonce: bs58.encode(nonce),
-      redirect_link: "https://www.google.com.vn",
-      payload: bs58.encode(encryptedPayload),
-    });
+      const params = new URLSearchParams({
+        dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
+        nonce: bs58.encode(nonce),
+        redirect_link: "https://www.google.com.vn",
+        payload: bs58.encode(encryptedPayload),
+      });
 
-    const url = buildUrl("signAndSendTransaction", params);
-    window.open(url);
+      const url = buildUrl("signAndSendTransaction", params);
+      window.open(url);
+    } catch (error) {
+      console.error("🚀 ~ signAndSendTransaction ~ error:", error);
+    }
   };
 
   const onPaseConnectData = () => {
