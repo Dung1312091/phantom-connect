@@ -215,6 +215,8 @@ const DappConnect = () => {
       const nonce = params.get("nonce");
       console.log(" nonce:", nonce);
       const data = params.get("data");
+      const errorMessage = params.get("errorMessage");
+      console.log("🚀 ~ getData ~ errorMessage:", errorMessage);
       console.log("data:", data);
       if (/onConnect/.test(pollingState.current)) {
         const sharedSecretDapp = nacl.box.before(
