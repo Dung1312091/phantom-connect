@@ -177,7 +177,8 @@ const DappConnect = () => {
 
       const url = buildUrl("signAndSendTransaction", params);
       console.log("Sending transaction...", url);
-      openWalletWithDeepLink(url);
+      alert(url);
+      window.open(url);
 
       // window.open(url);
     } catch (error) {
