@@ -114,6 +114,16 @@ const DappConnect = () => {
 
   const buildUrl = (path: string, params: URLSearchParams) =>
     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
+
+  function openWalletWithDeepLink(url: string) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_self";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   const onConnect = () => {
     const params = new URLSearchParams({
       dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
@@ -123,7 +133,8 @@ const DappConnect = () => {
     });
     const url = buildUrl("connect", params);
     console.log("url", url);
-    window.open(url);
+    // window.open(url);
+    openWalletWithDeepLink(url);
   };
   const createTransferTransaction = async () => {
     if (!phantomPublicKey) throw new Error("missing public key from user");
@@ -166,7 +177,9 @@ const DappConnect = () => {
 
       const url = buildUrl("signAndSendTransaction", params);
       console.log("Sending transaction...", url);
-      window.open(url);
+      openWalletWithDeepLink(url);
+
+      // window.open(url);
     } catch (error) {
       console.error("🚀 ~ signAndSendTransaction ~ error:", error);
     }
@@ -205,6 +218,9 @@ const DappConnect = () => {
       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
       <button onClick={() => signAndSendTransaction()}>Deposit Ton</button>
       <button onClick={() => onPaseConnectData()}>Parse</button>
+      <button onClick={() => onPaseConnectData()}>
+        Parse Transaction Data
+      </button>
     </div>
   );
 };
