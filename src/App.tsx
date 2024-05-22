@@ -12,7 +12,7 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
-// import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   createTransferInstruction,
@@ -135,10 +135,10 @@ const Methods = {
   onDisconnect: "onDisconnect",
   onSignAndSendTransaction: "onSignAndSendTransaction",
 };
-const POOLING_ID = "121212";
+// const POOLING_ID = "121212";
 
-// const buildState = (method: string) => `${method}:${uuidv4()}`;
-const buildState = (method: string) => `${method}:${POOLING_ID}`;
+const buildState = (method: string) => `${method}:${uuidv4()}`;
+// const buildState = (method: string) => `${method}:${POOLING_ID}`;
 
 const DappConnect = () => {
   const connection = new Connection(NETWORK);
@@ -157,7 +157,7 @@ const DappConnect = () => {
     `https://dev-api.telifi.xyz/accounts/phantom/callback/${state}`;
 
   const onConnect = () => {
-    setPoolingId(POOLING_ID);
+    // setPoolingId(POOLING_ID);
     pollingState.current = buildState(Methods.onConnect);
     const params = new URLSearchParams({
       dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
@@ -165,7 +165,7 @@ const DappConnect = () => {
       app_url: "https://phantom.app",
       redirect_link: buildRedirectLink(pollingState.current),
     });
-    // setPoolingId(uuidv4());
+    setPoolingId(uuidv4());
     const url = buildUrl("connect", params);
     console.log("url", url);
     (window as any)?.Telegram?.WebApp.openLink(url);
@@ -252,7 +252,7 @@ const DappConnect = () => {
   }
   const signAndSendTransaction = async () => {
     try {
-      setPoolingId(POOLING_ID);
+      // setPoolingId(POOLING_ID);
 
       pollingState.current = buildState(Methods.onSignAndSendTransaction);
       const transaction = await createTransferTransaction();
@@ -271,15 +271,15 @@ const DappConnect = () => {
       const params = new URLSearchParams({
         dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
         nonce: bs58.encode(nonce),
-        // redirect_link: buildRedirectLink(pollingState.current),
-        redirect_link: "https://www.google.com",
+        redirect_link: buildRedirectLink(pollingState.current),
+        // redirect_link: "https://www.google.com",
         payload: bs58.encode(encryptedPayload),
       });
 
       const url = buildUrl("signAndSendTransaction", params);
       localStorage.setItem("url", url);
       console.log("Sending transaction...", url);
-      // setPoolingId(uuidv4());
+      setPoolingId(uuidv4());
 
       // window.open(url);
       (window as any)?.Telegram?.WebApp.openLink(url);
@@ -289,7 +289,7 @@ const DappConnect = () => {
   };
   const signAndSendSLPTransaction = async () => {
     try {
-      setPoolingId(POOLING_ID);
+      // setPoolingId(POOLING_ID);
       pollingState.current = buildState(Methods.onSignAndSendTransaction);
       console.log("--------------------------------");
       const transaction = await buildSLPTransaction({
@@ -317,7 +317,7 @@ const DappConnect = () => {
       const url = buildUrl("signAndSendTransaction", params);
       localStorage.setItem("url", url);
       console.log("Sending transaction...", url);
-      // setPoolingId(uuidv4());
+      setPoolingId(uuidv4());
       // window.open(url);
       (window as any)?.Telegram?.WebApp.openLink(url);
     } catch (error) {
@@ -369,15 +369,17 @@ const DappConnect = () => {
           params.get("nonce")!,
           sharedSecret
         );
-        if (signAndSendTransactionData) {
-          console.log("signAndSendTransactionData", signAndSendTransactionData);
+        if (signAndSendTransactionData?.signature) {
+          console.log("send successfully", signAndSendTransactionData);
+        } else if (signAndSendTransactionData?.errorCode) {
+          console.log("send error", signAndSendTransactionData);
         }
       }
     }
 
     getData();
     return () => abortController.abort();
-  }, [poolingId]);
+  }, [dappKeyPair?.secretKey, poolingId, sharedSecret]);
 
   const onPaseConnectData = () => {
     const params = new URLSearchParams(DATA);
