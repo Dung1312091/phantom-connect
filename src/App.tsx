@@ -7,13 +7,13 @@ import { useState } from "react";
 import nacl from "tweetnacl";
 import { encodeBase64, decodeBase64 } from "tweetnacl-util";
 import {
-  clusterApiUrl,
   Connection,
   PublicKey,
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
-const NETWORK = clusterApiUrl("mainnet-beta");
+const NETWORK =
+  "https://broken-late-panorama.solana-mainnet.quiknode.pro/71a6fb542d7d3e0ae842f5804546b1ddeb0cbb70";
 
 const DATA =
   "phantom_encryption_public_key=ArLe9x4enicNfP9ywnJxyDBZKMBvYg9H5ZShsWrxWoff&nonce=CrAgCDx8QcEQU9nz4Jtyu99N537Ch73St&data=8VNf5dZ92vuwmw52cSpXxrTxUMR15cX6hco2a4GaeAzgduu4Aygi1bmAioj9MoFvNa6uCcoRD4zEbTtpMzgVpeFCpNiu9qWTQzuQXcd48K5wLNDJQs8TjVbAZ6aB995vhD2rGmwuUwJSDZTyHzWbzsXB7nsQGpNyY7JXLC4GfWdSRQ2z7SfdEdMmhSQu1mPd5FjwuEdvnoPrbVt4rkx6yX458kzdfjyv2bMLnEBeXm2N5i2MZxvhSfvY8ErAfnDVDjx7YxwnwsQw3C1ho2vN2dapUamnNPaxycrcKQatzbFr7V9GMGZvAWVws5r521pCXhzX4XoYeHF9oB2XtxMgRuZ5JAeDeZwbw9bK8VuyCDscTYL92VEV1CqwcJG9gcztYmVoLf9D4ZtBmtrNDFLpEbt3AtR6YMxH6f27jPbu49FoZmCc";
