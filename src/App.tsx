@@ -12,6 +12,14 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
+
+import {
+  createTransferInstruction,
+  // TOKEN_PROGRAM_ID,
+  getAssociatedTokenAddress,
+  // createAssociatedTokenAccountInstruction,
+  // ASSOCIATED_TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 const NETWORK =
   "https://broken-late-panorama.solana-mainnet.quiknode.pro/71a6fb542d7d3e0ae842f5804546b1ddeb0cbb70";
 
@@ -152,10 +160,84 @@ const DappConnect = () => {
     ).blockhash;
     return transaction;
   };
+
+  async function buildSLPTransaction({
+    tokenAddress,
+  }: {
+    tokenAddress: string;
+  }) {
+    const tokenMint = new PublicKey(tokenAddress);
+    const fromTokenAccount = await getAssociatedTokenAddress(
+      tokenMint,
+      phantomPublicKey!
+    );
+    const toTokenAccount = await getAssociatedTokenAddress(
+      tokenMint,
+      new PublicKey("9JMKSAKuz6amkRXnYdGj8AnpJGCrtVcPQSSkcYWcnDUd")
+    );
+    // const isTokenAccountAlreadyMade = await checkIfTokenAccountExists(connection, toTokenAccount);
+    const transferTransaction = new Transaction();
+    // if (!isTokenAccountAlreadyMade) {
+    //   const createAccountInstruction = createAssociatedTokenAccountInstruction(
+    //     fromPubKey,
+    //     toTokenAccount,
+    //     new PublicKey(sendData.to),
+    //     tokenMint,
+    //     TOKEN_PROGRAM_ID,
+    //     ASSOCIATED_TOKEN_PROGRAM_ID,
+    //   );
+    //   transferTransaction.add(createAccountInstruction);
+    // }
+    // const amountTransfer = getSolCoinTransferBalance(sendData.amount, sendData.token.decimals);
+    const transferInstruction = await createTransferInstruction(
+      fromTokenAccount,
+      toTokenAccount,
+      phantomPublicKey!,
+      100n
+    );
+    transferTransaction.add(transferInstruction);
+
+    return transferTransaction;
+  }
   const signAndSendTransaction = async () => {
     try {
       console.log("--------------------------------");
       const transaction = await createTransferTransaction();
+      console.log("🚀 ~ signAndSendTransaction ~ transaction:", transaction);
+
+      const serializedTransaction = transaction.serialize({
+        requireAllSignatures: false,
+      });
+
+      const payload = {
+        session,
+        transaction: bs58.encode(serializedTransaction),
+      };
+      const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret);
+
+      const params = new URLSearchParams({
+        dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
+        nonce: bs58.encode(nonce),
+        redirect_link: "https://www.google.com.vn",
+        payload: bs58.encode(encryptedPayload),
+      });
+
+      const url = buildUrl("signAndSendTransaction", params);
+      localStorage.setItem("url", url);
+      console.log("Sending transaction...", url);
+
+      // window.open(url);
+      (window as any)?.Telegram?.WebApp.openLink(url);
+    } catch (error) {
+      console.error("🚀 ~ signAndSendTransaction ~ error:", error);
+    }
+  };
+  const signAndSendSLPTransaction = async () => {
+    try {
+      console.log("--------------------------------");
+      const transaction = await buildSLPTransaction({
+        tokenAddress: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+      });
       console.log("🚀 ~ signAndSendTransaction ~ transaction:", transaction);
 
       const serializedTransaction = transaction.serialize({
@@ -219,14 +301,8 @@ const DappConnect = () => {
       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
       <button onClick={() => signAndSendTransaction()}>Deposit Ton</button>
       <button onClick={() => onPaseConnectData()}>Parse</button>
-      <button
-        onClick={() => {
-          window.open(
-            "https://phantom.app/ul/v1/signAndSendTransaction?dapp_encryption_public_key=9JcWJaGkvcCRZmpzni2FNEv8LwKXTNDGBFL6Vs3SRK4n&nonce=oZ2WP791i56Wz6nVdH5BVy4VxQgq776R&redirect_link=https%3A%2F%2Fwww.google.com.vn&payload=c4W4xoifvdEHUwa6Wp2PWJdvKPAGdxj3qtj5DoBjfVzs9t2o51o3wVMPWUcy4tVeniidW6TfUzZWu6sQpoTX2Myob2LTtm8496j2d2ZsaaAoLpQyWSevg8wLa2W5Ksh1yEuySBSMobGbmrYMPLXzWz4AfnFifavUohGgkMsuNDFfYXBwtqNK5KQnAuJaaoWXtzKQd4CbgQcqRJgu7TkgsCWM3U48wjYP9EhYbSEQ624anZE2zJ9z6AqswCTKR3y4gCX5KX3XwD1qvMjxKNgMyt8dm6Hnou9raTFv3kcVYdrUoeSr2T2ek8JaP3eqTQRX4AuP11X5G94C1Gu6pqJBUhvyC5TnrUEmPZC96msYjf7tSt37BcKtN4USTzJY1ZhsF67MhAup8oWyfaPgu3tkPV3VPJW6t8u8qypgX9USW51KwQgo1sVvmTyK377M563r9E8gpiaarHLhfBBKPLxL9sNeTDggtc99JDRrDoT8pFx3fHzbPuWJHtZ1LQRFYXUt9ieGyJgwYgPmL44nmYhSswTrLL2hxURGinkMCTefS1AGvYsHjQS3haDDxWwzBmgv71itw5BP9QY33oX1cGWizoZVphb8EXoZJYYYoxBXMjMkomxnNGFQcQRUyz3TLDme8fbrPmkciCU2yqD3Pew4NrSYo5KSvH4UpmdyK84WVRAbgijpQGbj9sJprvHEx96xi62FhFHDNR4bBQYQaADdVZFac6VURjukngLpSRqzMnGWzQJQbXSTubyTTyYy7nmKssRvm"
-          );
-        }}
-      >
-        Parse Transaction Data
+      <button onClick={() => signAndSendSLPTransaction()}>
+        Sign SLP Token
       </button>
     </div>
   );
