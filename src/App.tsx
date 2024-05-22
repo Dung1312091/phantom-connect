@@ -242,7 +242,7 @@ const DappConnect = () => {
     try {
       console.log("--------------------------------");
       const transaction = await buildSLPTransaction({
-        tokenAddress: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        tokenAddress: "HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3",
       });
       console.log("🚀 ~ signAndSendTransaction ~ transaction:", transaction);
 
