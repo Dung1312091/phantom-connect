@@ -1,504 +1,229 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // /* eslint-disable @typescript-eslint/no-unused-vars */
 // /* eslint-disable @typescript-eslint/no-explicit-any */
-import bs58 from "bs58";
-import { Buffer } from "buffer";
-import { useEffect, useRef, useState } from "react";
-import nacl from "tweetnacl";
-import { encodeBase64, decodeBase64 } from "tweetnacl-util";
-import {
-  Connection,
-  PublicKey,
-  SystemProgram,
-  Transaction,
-} from "@solana/web3.js";
-import { v4 as uuidv4 } from "uuid";
-
-import {
-  createTransferInstruction,
-  TOKEN_PROGRAM_ID,
-  getAssociatedTokenAddress,
-  createAssociatedTokenAccountInstruction,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  getAccount,
-} from "@solana/spl-token";
-const NETWORK =
-  "https://broken-late-panorama.solana-mainnet.quiknode.pro/71a6fb542d7d3e0ae842f5804546b1ddeb0cbb70";
-
+// import bs58 from "bs58";
+// import { Buffer } from "buffer";
+// import { useState } from "react";
+// import nacl from "tweetnacl";
 // const DATA =
-//   "phantom_encryption_public_key=ArLe9x4enicNfP9ywnJxyDBZKMBvYg9H5ZShsWrxWoff&nonce=CrAgCDx8QcEQU9nz4Jtyu99N537Ch73St&data=8VNf5dZ92vuwmw52cSpXxrTxUMR15cX6hco2a4GaeAzgduu4Aygi1bmAioj9MoFvNa6uCcoRD4zEbTtpMzgVpeFCpNiu9qWTQzuQXcd48K5wLNDJQs8TjVbAZ6aB995vhD2rGmwuUwJSDZTyHzWbzsXB7nsQGpNyY7JXLC4GfWdSRQ2z7SfdEdMmhSQu1mPd5FjwuEdvnoPrbVt4rkx6yX458kzdfjyv2bMLnEBeXm2N5i2MZxvhSfvY8ErAfnDVDjx7YxwnwsQw3C1ho2vN2dapUamnNPaxycrcKQatzbFr7V9GMGZvAWVws5r521pCXhzX4XoYeHF9oB2XtxMgRuZ5JAeDeZwbw9bK8VuyCDscTYL92VEV1CqwcJG9gcztYmVoLf9D4ZtBmtrNDFLpEbt3AtR6YMxH6f27jPbu49FoZmCc";
+//   "phantom_encryption_public_key=JAgRqyJja9Y694ayFWc4HnbKiJPmMCbdpBoyYbg5CLTS&nonce=7XeUnuxFfeE9atnGrKw9q9qkZTG5njPrD&data=3tg1zW9sVraqXcoAo21tiSpLkscynYjLLhiVfzzJWBWPdNZXQrQM4rW1pVKgn8WctA4S7rALkMcwjuWoTXRaebbtcPnP74h5Xy9SRFS9tCftRFoZBAZq1dt3Q14DW7SxzzfhvFtiNwVLY1EnxDnCfSNeg4WJYRnMctDmQdWBwGw9dFNGwHrpdWLHGsLooZTtCS5gr1Y114zUeZQCvVKjxfXDdyUzj1eTxZLQjm4cps9nMWXwJYRpsDMgUFa8L5Hc7xcp6QH7uBfyvd5v5YYe9PxFhovxribmxisaQYyUVKFtira73rUNzkpFx2SxW4kYWPKU267cwGvgSQrCXnjuxigz49xZ6bVpVSoNWuqtqiQFm3iBvx7pnaMSLc1KPVGtK1fHvxAmWrn6QTm6mG6zB65eGcybbQCmPRSNEwCSS9awtumb&gfe_rd=mr&pli=1";
+// // export const decodeBase64 = (b64: string) =>
+// //   Uint8Array.from(atob(b64), (b) => b.charCodeAt(0));
+// // export const encodeBase64 = (b: any) =>
+// //   btoa(String.fromCodePoint.apply(null, b));
 
-// const TRANSFER_DATA =
-//   "nonce=FKLxFTJEfjdEkuNYJxues1HFPkHhSX5PS&data=4VY8ZMpw7kBkpTWyQZ7mruJ7WFHQDRTt1FjnhVDH8BVyxpTGWGeXmbbopzt2pu5bnEiUj6Y62nN93rdG9zzg3gWFbGi5CLtAqcoPoff5bPr64gZ1gtub4GsT8pbtYa7M9i6WhJygdFftSEVmVdRhNTGpG89zjYq7cDsuXZpwYmMAu56X8c6wMLMdprCHgV3eGG2gaBpPNHce29ojtmSp2iiP5YgPgRR9EaqFGVkAMATExNVHLL8MK";
-const LOCAL_STORE_KEYS = {
-  KEYPAIR: {
-    PUBLIC_KEY: "publicKey",
-    SECRET_KEY: "secretKey",
-  },
-  SHARED_SECRET: "sharedSecret",
-  PHANTOM_WALLET_PUBLICKEY: "phantom_wallet_publicKey",
-  PHANTOM_CONNECT_SECCTION: "phantom_connect_secction",
-};
+// // const KeyPair = {
+// //   publicKey: "56os8hxWZGxbGIRqVOp8qUIoy+cdSrJLFjRer97sOmM=",
+// //   secretKey: "nYnYQERbZQkKdKpiyRTcVIIoMsr1GNHUkqGvPnNCkwc=",
+// // };
 
-const storages = {
-  setPhanTomWalletPublicKey: (v: string) => {
-    localStorage.setItem(LOCAL_STORE_KEYS.PHANTOM_WALLET_PUBLICKEY, v);
-  },
-  getPhanTomWalletPublicKey: () => {
-    const key = localStorage.getItem(LOCAL_STORE_KEYS.PHANTOM_WALLET_PUBLICKEY);
-    if (!key) return null;
-    return new PublicKey(key!);
-  },
-  setSession: (v: string) => {
-    return localStorage.setItem(LOCAL_STORE_KEYS.PHANTOM_CONNECT_SECCTION, v);
-  },
-  getSession: () => {
-    return localStorage.getItem(LOCAL_STORE_KEYS.PHANTOM_CONNECT_SECCTION);
-  },
-  setSharedSecret: (v: string) => {
-    return localStorage.setItem(LOCAL_STORE_KEYS.SHARED_SECRET, v);
-  },
-  getSharedSecret: () => {
-    return localStorage.getItem(LOCAL_STORE_KEYS.SHARED_SECRET);
-  },
-  setKeypairPublicKey: (v: string) => {
-    localStorage.setItem(LOCAL_STORE_KEYS.KEYPAIR.PUBLIC_KEY, v);
-  },
-  getKeypairPublicKey: () => {
-    return localStorage.getItem(LOCAL_STORE_KEYS.KEYPAIR.PUBLIC_KEY);
-  },
-  setKeypairSecretKey: (v: string) => {
-    localStorage.setItem(LOCAL_STORE_KEYS.KEYPAIR.SECRET_KEY, v);
-  },
-  getKeypairSecretKey: () => {
-    return localStorage.getItem(LOCAL_STORE_KEYS.KEYPAIR.SECRET_KEY);
-  },
-  reset: () => {
-    localStorage.removeItem(LOCAL_STORE_KEYS.KEYPAIR.PUBLIC_KEY);
-    localStorage.removeItem(LOCAL_STORE_KEYS.KEYPAIR.SECRET_KEY);
-    localStorage.removeItem(LOCAL_STORE_KEYS.SHARED_SECRET);
-    localStorage.removeItem(LOCAL_STORE_KEYS.PHANTOM_WALLET_PUBLICKEY);
-    localStorage.removeItem(LOCAL_STORE_KEYS.PHANTOM_CONNECT_SECCTION);
-  },
-};
-function initKeyPairs(): nacl.BoxKeyPair {
-  const storedPublicKeyBase64 = storages.getKeypairPublicKey();
-  const storedSecretKeyBase64 = storages.getKeypairSecretKey();
+// const DappConnect = () => {
+//   // const [dappKeyPair] = useState({
+//   //   publicKey: decodeBase64(KeyPair.publicKey),
+//   //   secretKey: decodeBase64(KeyPair.secretKey),
+//   // });
+//   const [dappKeyPair] = useState(nacl.box.keyPair());
+//   // console.log("🚀 ~ DappConnect ~ dappKeyPair:", dappKeyPair);
+//   // const publicKey = encodeBase64(dappKeyPair.publicKey);
+//   // const secretKey = encodeBase64(dappKeyPair.secretKey);
+//   // console.log("🚀 ~ DappConnect ~ secretKey:", secretKey);
+//   // const xpublicKey = decodeBase64(publicKey);
+//   // console.log("🚀 ~ DappConnect ~ xpublicKey:", xpublicKey);
+//   // console.log("🚀 ~ DappConnect ~ xpublicKey:", xpublicKey);
+//   // const xsecretKey = decodeBase64(secretKey);
+//   // console.log("🚀 ~ DappConnect ~ xsecretKey:", xsecretKey);
 
-  if (storedPublicKeyBase64 && storedSecretKeyBase64) {
-    const storedPublicKey = decodeBase64(storedPublicKeyBase64);
-    const storedSecretKey = decodeBase64(storedSecretKeyBase64);
-    return {
-      publicKey: storedPublicKey,
-      secretKey: storedSecretKey,
-    };
-  }
-  const keypair = nacl.box.keyPair();
-  const publicKeyBase64 = encodeBase64(keypair.publicKey);
-  const secretKeyBase64 = encodeBase64(keypair.secretKey);
-  storages.setKeypairPublicKey(publicKeyBase64);
-  storages.setKeypairSecretKey(secretKeyBase64);
-  return keypair;
-}
-function initSharedSecret() {
-  const sharedSecret = storages.getSharedSecret();
-  if (!sharedSecret) return null;
-  return decodeBase64(sharedSecret);
-}
+//   const buildUrl = (path: string, params: URLSearchParams) =>
+//     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
+//   const onConnect = () => {
+//     const params = new URLSearchParams({
+//       dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
+//       cluster: "mainnet-beta",
+//       app_url: "https://phantom.app",
+//       redirect_link: "https://www.google.com.vn",
+//     });
+//     const url = buildUrl("connect", params);
+//     console.log("url", url);
+//     window.open(url);
+//   };
+//   function openMetaMaskUrl(url: string) {
+//     const a = document.createElement("a");
+//     a.href = url;
+//     a.target = "_self";
+//     document.body.appendChild(a);
+//     a.click();
+//     a.remove();
+//   }
+//   const decryptPayload = (
+//     data: string,
+//     nonce: string,
+//     sharedSecret?: Uint8Array
+//   ) => {
+//     if (!sharedSecret) throw new Error("missing shared secret");
 
-const decryptPayload = (
-  data: string,
-  nonce: string,
-  sharedSecret?: Uint8Array
-) => {
-  if (!sharedSecret) throw new Error("missing shared secret");
+//     const decryptedData = nacl.box.open.after(
+//       bs58.decode(data),
+//       bs58.decode(nonce),
+//       sharedSecret
+//     );
+//     console.log("🚀 ~ DappConnect ~ decryptedData:", decryptedData);
+//     if (!decryptedData) {
+//       throw new Error("Unable to decrypt data");
+//     }
+//     return JSON.parse(Buffer.from(decryptedData).toString("utf8"));
+//   };
+//   const onTransfer = () => {
+//     const params = new URLSearchParams(DATA);
+//     console.log("🚀 ~ onTransfer ~ params:", params);
+//     const phantom_encryption_public_key = params.get(
+//       "phantom_encryption_public_key"
+//     );
+//     const nonce = params.get("nonce");
+//     const data = params.get("data");
+//     const public_key = params.get("public_key");
+//     const session = params.get("session");
+//     console.log(
+//       "🚀 ~ onTransfer ~ phantom_encryption_public_key:",
+//       { phantom_encryption_public_key },
+//       { nonce },
+//       { data },
+//       { public_key },
+//       { session }
+//     );
+//     const sharedSecretDapp = nacl.box.before(
+//       bs58.decode(params.get("phantom_encryption_public_key")!),
+//       dappKeyPair.secretKey
+//     );
+//     const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
+//     console.log("🚀 ~ onTransfer ~ connectData:", connectData);
+//   };
 
-  const decryptedData = nacl.box.open.after(
-    bs58.decode(data),
-    bs58.decode(nonce),
-    sharedSecret
-  );
-  console.log("🚀 ~ DappConnect ~ decryptedData:", decryptedData);
-  if (!decryptedData) {
-    throw new Error("Unable to decrypt data");
-  }
-  return JSON.parse(Buffer.from(decryptedData).toString("utf8"));
-};
+//   return (
+//     <div>
+//       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
+//       <button onClick={() => onTransfer()}>Deposit Ton</button>
+//       <button onClick={() => openMetaMaskUrl("https://metamask.app.link/")}>
+//         Open metamask
+//       </button>
+//     </div>
+//   );
+// };
 
-const encryptPayload = (payload: any, sharedSecret?: Uint8Array) => {
-  if (!sharedSecret) throw new Error("missing shared secret");
+// const App = () => {
+//   return <DappConnect />;
+// };
+// export default App;
 
-  const nonce = nacl.randomBytes(24);
-
-  const encryptedPayload = nacl.box.after(
-    Buffer.from(JSON.stringify(payload)),
-    nonce,
-    sharedSecret
-  );
-
-  return [nonce, encryptedPayload];
-};
-
-const pollingDataFromPhantomWallet = async (
-  state: string,
-  abortController: AbortController
-) => {
-  return new Promise<string>((resolve, reject) => {
-    const _poll = async () => {
-      try {
-        const res = await fetch(
-          `https://dev-api.telifi.xyz/accounts/phantom/polling/${state}`,
-          {
-            signal: abortController.signal,
-          }
-        );
-        const data = await res.json();
-        console.log("🚀 ~ const_poll= ~ data:", data?.data);
-        if (!data?.data) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          return requestAnimationFrame(_poll);
-        }
-        resolve(data.data);
-      } catch (e) {
-        reject(e);
-      }
-    };
-    _poll();
-  });
-};
-const Methods = {
-  onConnect: "onConnect",
-  onDisconnect: "onDisconnect",
-  onSignAndSendTransaction: "onSignAndSendTransaction",
-};
-// const POOLING_ID = "121212";
-
-const buildState = (method: string) => `${method}:${uuidv4()}`;
-// const buildState = (method: string) => `${method}:${POOLING_ID}`;
-
-const DappConnect = () => {
-  const connection = new Connection(NETWORK);
-  const [dappKeyPair, setDappKeyPair] = useState(() => initKeyPairs());
-  const [session, setSession] = useState(() => storages.getSession());
-  const [phantomPublicKey, setPhantomPublicKey] = useState(() =>
-    storages.getPhanTomWalletPublicKey()
-  );
-  const [poolingId, setPoolingId] = useState<string>("");
-  const [sharedSecret, setSharedSecret] = useState<Uint8Array | null>(() =>
-    initSharedSecret()
-  );
-  const pollingState = useRef(buildState(Methods.onConnect));
-  const buildUrl = (path: string, params: URLSearchParams) =>
-    `https://phantom.app/ul/v1/${path}?${params.toString()}`;
-
-  const buildRedirectLink = (state: string) =>
-    `https://dev-api.telifi.xyz/accounts/phantom/callback/${state}`;
+import { useEffect, useState } from "react";
+import { EthereumProvider } from "@walletconnect/ethereum-provider";
+import { CoreUtil, EventsCtrl, ExplorerCtrl } from "@walletconnect/modal-core";
+export const App = () => {
+  // const [isConnecting, setIsConnecting] = useState(false);
+  const [provider, setProvider] = useState<any>(undefined);
+  console.log("🚀 ~ App ~ provider:", provider);
+  console.log("----------------session", provider?.session);
+  const [uri, setUri] = useState("");
+  // const [isDisconnecting, setIsDisconnecting] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    if (!poolingId) return;
-    const abortController = new AbortController();
-    async function getData() {
-      const res = await pollingDataFromPhantomWallet(
-        pollingState.current,
-        abortController
+    async function initProvider() {
+      const provider = await EthereumProvider.init({
+        projectId: "108fb42acd2ea6ecab66593e3e948204",
+        chains: [1],
+        methods: ["personal_sign", "eth_sendTransaction"],
+        showQrModal: true,
+        qrModalOptions: {
+          themeMode: "light",
+          themeVariables: {
+            "--wcm-z-index": "100000",
+          },
+        },
+        metadata: {
+          name: "Tobi Token Bot",
+          description: "Wallet for WalletConnect",
+          url: "https://www.tobi.fun/",
+          icons: ["https://app.tobiwallet.app/icons/favicon.png"],
+        },
+      });
+      setProvider(provider);
+      setIsInitializing(false);
+    }
+    initProvider();
+  }, []);
+  useEffect(() => {
+    EventsCtrl.subscribe(async (event) => {
+      console.log("event", event);
+      const wallet = ExplorerCtrl.state?.recomendedWallets?.find(
+        (wallet) => wallet.id === (event.data as any)?.walletId
       );
-      console.log("🚀 ~ getData ~ res:", res);
-      const params = new URLSearchParams(res);
-      console.log("🚀 ~ getData ~ params:", params);
-      const phantom_encryption_public_key = params.get(
-        "phantom_encryption_public_key"
-      );
-      console.log(
-        "phantom_encryption_public_key:",
-        phantom_encryption_public_key
-      );
-      const nonce = params.get("nonce");
-      console.log(" nonce:", nonce);
-      const data = params.get("data");
-      const errorMessage = params.get("errorMessage");
-      console.log("🚀 ~ getData ~ errorMessage:", errorMessage);
-      console.log("data:", data);
-      if (/onConnect/.test(pollingState.current)) {
-        const sharedSecretDapp = nacl.box.before(
-          bs58.decode(phantom_encryption_public_key!),
-          dappKeyPair.secretKey
-        );
-
-        const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
-
-        setSharedSecret(sharedSecretDapp);
-        setSession(connectData.session);
-        const PhantomPublicKey = new PublicKey(connectData.public_key);
-        setPhantomPublicKey(PhantomPublicKey);
-
-        console.log("🚀 ~ onPaseConnectData ~ connectData:", connectData);
-        storages.setSession(connectData.session);
-        storages.setPhanTomWalletPublicKey(connectData.public_key);
-        storages.setSharedSecret(encodeBase64(sharedSecretDapp));
-        console.log("on connect successful");
-      } else if (/onSignAndSendTransaction/.test(pollingState.current)) {
-        const signAndSendTransactionData = decryptPayload(
-          params.get("data")!,
-          params.get("nonce")!,
-          sharedSecret!
-        );
-        if (signAndSendTransactionData?.signature) {
-          console.log("send successfully", signAndSendTransactionData);
-        } else if (signAndSendTransactionData?.errorCode) {
-          console.log("send error", signAndSendTransactionData);
-        }
-      } else if (/onDisconnect/.test(pollingState.current)) {
-        console.log("Disconnected!");
+      console.log("wallet", wallet);
+      const walletUrl = wallet?.mobile?.universal;
+      const name = wallet?.name;
+      if (walletUrl) {
+        const href = CoreUtil.formatUniversalUrl(walletUrl, uri, name!);
+        (window as any).Telegram.webApp.openLink(href);
       }
-    }
-
-    getData();
-    return () => abortController.abort();
-  }, [dappKeyPair?.secretKey, poolingId]);
-
-  const onConnect = () => {
-    // setPoolingId(POOLING_ID);
-    pollingState.current = buildState(Methods.onConnect);
-    const params = new URLSearchParams({
-      dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
-      cluster: "mainnet-beta",
-      app_url: "https://phantom.app",
-      redirect_link: buildRedirectLink(pollingState.current),
     });
-    setPoolingId(uuidv4());
-    const url = buildUrl("connect", params);
-    console.log("url", url);
-    (window as any)?.Telegram?.WebApp.openLink(url);
-  };
-  const createTransferTransaction = async () => {
-    if (!phantomPublicKey) throw new Error("missing public key from user");
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: phantomPublicKey,
-        toPubkey: new PublicKey("9JMKSAKuz6amkRXnYdGj8AnpJGCrtVcPQSSkcYWcnDUd"),
-        lamports: 100,
-      })
-    );
-    transaction.feePayer = phantomPublicKey;
-    const anyTransaction: any = transaction;
-    anyTransaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
-    return transaction;
-  };
-  async function checkIfTokenAccountExists(
-    connection: any,
-    receiverTokenAccountAddress: PublicKey
-  ) {
+  }, [uri]);
+  useEffect(() => {
+    if (!provider) return;
+    provider.on("display_uri", (uri: string) => {
+      console.log("🚀 ~ provider.on ~ uri:", uri);
+      setUri(uri);
+      // setIsConnecting(false);
+    });
+  }, [provider]);
+
+  useEffect(() => {
+    if (!provider) return;
+    provider.on("accountsChanged", (account: any) => {
+      console.log("on account change", account);
+    });
+  }, [provider]);
+
+  async function onConnect() {
     try {
-      await getAccount(
-        connection,
-        receiverTokenAccountAddress,
-        "confirmed",
-        TOKEN_PROGRAM_ID
-      );
-      return true;
+      // setIsConnecting(true);
+      await provider.connect();
+      // setOpenDepositEvmAssets(true);
     } catch (error) {
-      if ((error as Error).name === "TokenAccountNotFoundError") return false;
-      throw error;
+      console.log("onConnect error:", error);
+      throw new Error("providerClient is not initialized");
+    } finally {
+      // setIsConnecting(false);
+      // setUri("");
     }
   }
-  async function buildSLPTransaction({
-    tokenAddress,
-  }: {
-    tokenAddress: string;
-  }) {
-    const tokenMint = new PublicKey(tokenAddress);
-    const fromTokenAccount = await getAssociatedTokenAddress(
-      tokenMint,
-      phantomPublicKey!
-    );
-    const toTokenAccount = await getAssociatedTokenAddress(
-      tokenMint,
-      new PublicKey("9JMKSAKuz6amkRXnYdGj8AnpJGCrtVcPQSSkcYWcnDUd")
-    );
-    const isTokenAccountAlreadyMade = await checkIfTokenAccountExists(
-      connection,
-      toTokenAccount
-    );
-    const transferTransaction = new Transaction();
-    if (!isTokenAccountAlreadyMade) {
-      const createAccountInstruction = createAssociatedTokenAccountInstruction(
-        phantomPublicKey!,
-        toTokenAccount,
-        new PublicKey("9JMKSAKuz6amkRXnYdGj8AnpJGCrtVcPQSSkcYWcnDUd"),
-        tokenMint,
-        TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID
-      );
-      transferTransaction.add(createAccountInstruction);
+
+  async function handleDisconnect() {
+    try {
+      // setIsDisconnecting(true);
+      await provider.disconnect();
+    } catch (error) {
+      console.error("disconnect error", error);
+    } finally {
+      console.log("disconnect");
+      // setIsDisconnecting(false);
     }
-    // const amountTransfer = getSolCoinTransferBalance(sendData.amount, sendData.token.decimals);
-    const transferInstruction = await createTransferInstruction(
-      fromTokenAccount,
-      toTokenAccount,
-      phantomPublicKey!,
-      100n
-    );
-
-    transferTransaction.add(transferInstruction);
-    transferTransaction.feePayer = phantomPublicKey!;
-    const anyTransaction: any = transferTransaction;
-    anyTransaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
-
-    return transferTransaction;
   }
-  const signAndSendTransaction = async () => {
-    try {
-      // setPoolingId(POOLING_ID);
-
-      pollingState.current = buildState(Methods.onSignAndSendTransaction);
-      const transaction = await createTransferTransaction();
-      console.log("🚀 ~ signAndSendTransaction ~ transaction:", transaction);
-
-      const serializedTransaction = transaction.serialize({
-        requireAllSignatures: false,
-      });
-
-      const payload = {
-        session,
-        transaction: bs58.encode(serializedTransaction),
-      };
-      const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret!);
-
-      const params = new URLSearchParams({
-        dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
-        nonce: bs58.encode(nonce),
-        redirect_link: buildRedirectLink(pollingState.current),
-        // redirect_link: "https://www.google.com",
-        payload: bs58.encode(encryptedPayload),
-      });
-
-      const url = buildUrl("signAndSendTransaction", params);
-      localStorage.setItem("url", url);
-      console.log("Sending transaction...", url);
-      setPoolingId(uuidv4());
-
-      // window.open(url);
-      (window as any)?.Telegram?.WebApp.openLink(url);
-    } catch (error) {
-      console.error("🚀 ~ signAndSendTransaction ~ error:", error);
-    }
-  };
-  const signAndSendSLPTransaction = async () => {
-    try {
-      // setPoolingId(POOLING_ID);
-      pollingState.current = buildState(Methods.onSignAndSendTransaction);
-      console.log("--------------------------------");
-      const transaction = await buildSLPTransaction({
-        tokenAddress: "HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3",
-      });
-      console.log("🚀 ~ signAndSendTransaction ~ transaction:", transaction);
-
-      const serializedTransaction = transaction.serialize({
-        requireAllSignatures: false,
-      });
-
-      const payload = {
-        session,
-        transaction: bs58.encode(serializedTransaction),
-      };
-      const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret!);
-
-      const params = new URLSearchParams({
-        dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
-        nonce: bs58.encode(nonce),
-        redirect_link: buildRedirectLink(pollingState.current),
-        payload: bs58.encode(encryptedPayload),
-      });
-
-      const url = buildUrl("signAndSendTransaction", params);
-      localStorage.setItem("url", url);
-      console.log("Sending transaction...", url);
-      setPoolingId(uuidv4());
-      // window.open(url);
-      (window as any)?.Telegram?.WebApp.openLink(url);
-    } catch (error) {
-      console.error("🚀 ~ signAndSendTransaction ~ error:", error);
-    }
-  };
-
-  // const onPaseConnectData = () => {
-  //   const params = new URLSearchParams(DATA);
-  //   const phantom_encryption_public_key = params.get(
-  //     "phantom_encryption_public_key"
-  //   );
-  //   console.log(
-  //     "🚀 ~ onPaseConnectData ~ phantom_encryption_public_key:",
-  //     phantom_encryption_public_key
-  //   );
-  //   const nonce = params.get("nonce");
-  //   const data = params.get("data");
-  //   const sharedSecretDapp = nacl.box.before(
-  //     bs58.decode(phantom_encryption_public_key!),
-  //     dappKeyPair.secretKey
-  //   );
-
-  //   const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
-
-  //   setSharedSecret(sharedSecretDapp);
-  //   setSession(connectData.session);
-  //   const PhantomPublicKey = new PublicKey(connectData.public_key);
-  //   setPhantomPublicKey(PhantomPublicKey);
-
-  //   console.log("🚀 ~ onPaseConnectData ~ connectData:", connectData);
-  //   storages.setSession(connectData.session);
-  //   storages.setPhanTomWalletPublicKey(connectData.public_key);
-  // };
-  // const parseTransaction = () => {
-  //   const params = new URLSearchParams(TRANSFER_DATA);
-
-  //   const signAndSendTransactionData = decryptPayload(
-  //     params.get("data")!,
-  //     params.get("nonce")!,
-  //     sharedSecret!
-  //   );
-  //   if (signAndSendTransactionData) {
-  //     console.log("signAndSendTransactionData", signAndSendTransactionData);
-  //   }
-  // };
-
-  const handleDisconnect = () => {
-    const payload = {
-      session,
-    };
-    pollingState.current = buildState(Methods.onDisconnect);
-
-    const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret!);
-
-    const params = new URLSearchParams({
-      dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
-      nonce: bs58.encode(nonce),
-      redirect_link: buildRedirectLink(pollingState.current),
-      payload: bs58.encode(encryptedPayload),
-    });
-    storages.reset();
-    setDappKeyPair(initKeyPairs());
-    const url = buildUrl("disconnect", params);
-    (window as any)?.Telegram?.WebApp.openLink(url);
-  };
+  console.log("isInitializing", isInitializing);
   return (
     <div>
-      <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
-      <button onClick={() => signAndSendTransaction()}>Deposit Ton</button>
-      {/* <button onClick={() => onPaseConnectData()}>Parse</button> */}
-      <button onClick={() => signAndSendSLPTransaction()}>
-        Sign SLP Token
+      <button
+        onClick={() => {
+          if (isInitializing) return;
+          if (!provider?.accounts[0] && !provider?.session) {
+            onConnect();
+          } else {
+            handleDisconnect();
+            console.log("provider", provider);
+          }
+        }}
+      >
+        Onclick
       </button>
-      {/* <button onClick={() => parseTransaction()}>Parse transaction</button> */}
-      <button onClick={() => handleDisconnect()}>Disconnect</button>
     </div>
   );
-};
-
-const App = () => {
-  return <DappConnect />;
 };
 export default App;
