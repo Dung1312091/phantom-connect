@@ -474,7 +474,9 @@ const DappConnect = () => {
     const params = new URLSearchParams({
       dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
       nonce: bs58.encode(nonce),
-      redirect_link: buildRedirectLink(pollingState.current),
+      // redirect_link: buildRedirectLink(pollingState.current),
+      redirect_link: "https://www.google.com",
+
       payload: bs58.encode(encryptedPayload),
     });
     storages.reset();
