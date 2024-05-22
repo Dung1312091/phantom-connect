@@ -220,7 +220,13 @@ const DappConnect = () => {
       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
       <button onClick={() => signAndSendTransaction()}>Deposit Ton</button>
       <button onClick={() => onPaseConnectData()}>Parse</button>
-      <button onClick={() => onPaseConnectData()}>
+      <button
+        onClick={() => {
+          window.open(
+            "https://phantom.app/ul/v1/signAndSendTransaction?dapp_encryption_public_key=9JcWJaGkvcCRZmpzni2FNEv8LwKXTNDGBFL6Vs3SRK4n&nonce=oZ2WP791i56Wz6nVdH5BVy4VxQgq776R&redirect_link=https%3A%2F%2Fwww.google.com.vn&payload=c4W4xoifvdEHUwa6Wp2PWJdvKPAGdxj3qtj5DoBjfVzs9t2o51o3wVMPWUcy4tVeniidW6TfUzZWu6sQpoTX2Myob2LTtm8496j2d2ZsaaAoLpQyWSevg8wLa2W5Ksh1yEuySBSMobGbmrYMPLXzWz4AfnFifavUohGgkMsuNDFfYXBwtqNK5KQnAuJaaoWXtzKQd4CbgQcqRJgu7TkgsCWM3U48wjYP9EhYbSEQ624anZE2zJ9z6AqswCTKR3y4gCX5KX3XwD1qvMjxKNgMyt8dm6Hnou9raTFv3kcVYdrUoeSr2T2ek8JaP3eqTQRX4AuP11X5G94C1Gu6pqJBUhvyC5TnrUEmPZC96msYjf7tSt37BcKtN4USTzJY1ZhsF67MhAup8oWyfaPgu3tkPV3VPJW6t8u8qypgX9USW51KwQgo1sVvmTyK377M563r9E8gpiaarHLhfBBKPLxL9sNeTDggtc99JDRrDoT8pFx3fHzbPuWJHtZ1LQRFYXUt9ieGyJgwYgPmL44nmYhSswTrLL2hxURGinkMCTefS1AGvYsHjQS3haDDxWwzBmgv71itw5BP9QY33oX1cGWizoZVphb8EXoZJYYYoxBXMjMkomxnNGFQcQRUyz3TLDme8fbrPmkciCU2yqD3Pew4NrSYo5KSvH4UpmdyK84WVRAbgijpQGbj9sJprvHEx96xi62FhFHDNR4bBQYQaADdVZFac6VURjukngLpSRqzMnGWzQJQbXSTubyTTyYy7nmKssRvm"
+          );
+        }}
+      >
         Parse Transaction Data
       </button>
     </div>
