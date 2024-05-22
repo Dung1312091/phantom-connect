@@ -195,7 +195,13 @@ const DappConnect = () => {
       phantomPublicKey!,
       100n
     );
+
     transferTransaction.add(transferInstruction);
+    transferTransaction.feePayer = phantomPublicKey!;
+    const anyTransaction: any = transferTransaction;
+    anyTransaction.recentBlockhash = (
+      await connection.getLatestBlockhash()
+    ).blockhash;
 
     return transferTransaction;
   }
