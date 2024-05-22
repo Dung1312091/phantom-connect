@@ -3,7 +3,7 @@
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 import bs58 from "bs58";
 import { Buffer } from "buffer";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import nacl from "tweetnacl";
 import { encodeBase64, decodeBase64 } from "tweetnacl-util";
 import {
@@ -12,6 +12,7 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   createTransferInstruction,
@@ -33,29 +34,16 @@ function initKeyPairs(): nacl.BoxKeyPair {
   if (storedPublicKeyBase64 && storedSecretKeyBase64) {
     const storedPublicKey = decodeBase64(storedPublicKeyBase64);
     const storedSecretKey = decodeBase64(storedSecretKeyBase64);
-    // Kiểm tra khóa đã lấy có khớp với khóa ban đầu hay không
-
     return {
       publicKey: storedPublicKey,
       secretKey: storedSecretKey,
     };
   }
-
   const keypair = nacl.box.keyPair();
-
   const publicKeyBase64 = encodeBase64(keypair.publicKey);
   const secretKeyBase64 = encodeBase64(keypair.secretKey);
   localStorage.setItem("publicKey", publicKeyBase64);
   localStorage.setItem("secretKey", secretKeyBase64);
-
-  const vstoredPublicKeyBase64 = localStorage.getItem("publicKey");
-  const vstoredSecretKeyBase64 = localStorage.getItem("secretKey");
-
-  const storedPublicKey = decodeBase64(vstoredPublicKeyBase64!);
-  const storedSecretKey = decodeBase64(vstoredSecretKeyBase64!);
-
-  console.log("-----1", nacl.verify(storedPublicKey, keypair.publicKey)); // true
-  console.log("-----2", nacl.verify(storedSecretKey, keypair.secretKey)); // true
   return keypair;
 }
 const KEYS = {
@@ -112,6 +100,43 @@ const encryptPayload = (payload: any, sharedSecret?: Uint8Array) => {
   return [nonce, encryptedPayload];
 };
 
+const pollingDataFromPhantomWallet = async (
+  state: string,
+  abortController: AbortController
+) => {
+  return new Promise<string>((resolve, reject) => {
+    const _poll = async () => {
+      try {
+        const res = await fetch(
+          `https://dev-api.telifi.xyz/accounts/phantom/polling/${state}`,
+          {
+            signal: abortController.signal,
+          }
+        );
+        const data = await res.json();
+        console.log("🚀 ~ const_poll= ~ data:", data);
+        if (!data?.data) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          return requestAnimationFrame(_poll);
+        }
+        resolve(data);
+      } catch (e) {
+        reject(e);
+      }
+    };
+    _poll();
+  });
+};
+const Methods = {
+  onConnect: "onConnect",
+  onDisconnect: "onDisconnect",
+  onSignAndSendTransaction: "onSignAndSendTransaction",
+};
+
+const buildState = (method: string) => `${method}:${uuidv4()}`;
+
+const POOLING_ID = "121212";
+
 const DappConnect = () => {
   const connection = new Connection(NETWORK);
   const [dappKeyPair] = useState(() => initKeyPairs());
@@ -119,31 +144,28 @@ const DappConnect = () => {
   const [phantomPublicKey, setPhantomPublicKey] = useState(() =>
     storages.getPhanTomPublicKey()
   );
+  const [poolingId, setPoolingId] = useState<string>("");
   const [sharedSecret, setSharedSecret] = useState<Uint8Array>();
-
+  const pollingState = useRef(buildState(Methods.onConnect));
   const buildUrl = (path: string, params: URLSearchParams) =>
     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
 
-  function openWalletWithDeepLink(url: string) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.target = "_self";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  }
+  const buildRedirectLink = (state: string) =>
+    `https://dev-api.telifi.xyz/accounts/phantom/callback/${state}`;
 
   const onConnect = () => {
+    setPoolingId(POOLING_ID);
+    pollingState.current = buildState(Methods.onConnect);
     const params = new URLSearchParams({
       dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
       cluster: "mainnet-beta",
       app_url: "https://phantom.app",
-      redirect_link: "https://www.google.com.vn",
+      redirect_link: buildRedirectLink(pollingState.current),
     });
+    // setPoolingId(uuidv4());
     const url = buildUrl("connect", params);
     console.log("url", url);
-    // window.open(url);
-    openWalletWithDeepLink(url);
+    (window as any)?.Telegram?.WebApp.openLink(url);
   };
   const createTransferTransaction = async () => {
     if (!phantomPublicKey) throw new Error("missing public key from user");
@@ -227,7 +249,9 @@ const DappConnect = () => {
   }
   const signAndSendTransaction = async () => {
     try {
-      console.log("--------------------------------");
+      setPoolingId(POOLING_ID);
+
+      pollingState.current = buildState(Methods.onSignAndSendTransaction);
       const transaction = await createTransferTransaction();
       console.log("🚀 ~ signAndSendTransaction ~ transaction:", transaction);
 
@@ -244,13 +268,14 @@ const DappConnect = () => {
       const params = new URLSearchParams({
         dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
         nonce: bs58.encode(nonce),
-        redirect_link: "https://www.google.com.vn",
+        redirect_link: buildRedirectLink(pollingState.current),
         payload: bs58.encode(encryptedPayload),
       });
 
       const url = buildUrl("signAndSendTransaction", params);
       localStorage.setItem("url", url);
       console.log("Sending transaction...", url);
+      // setPoolingId(uuidv4());
 
       // window.open(url);
       (window as any)?.Telegram?.WebApp.openLink(url);
@@ -260,6 +285,9 @@ const DappConnect = () => {
   };
   const signAndSendSLPTransaction = async () => {
     try {
+      setPoolingId(POOLING_ID);
+
+      pollingState.current = buildState(Methods.onSignAndSendTransaction);
       console.log("--------------------------------");
       const transaction = await buildSLPTransaction({
         tokenAddress: "HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3",
@@ -279,20 +307,34 @@ const DappConnect = () => {
       const params = new URLSearchParams({
         dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
         nonce: bs58.encode(nonce),
-        redirect_link: "https://www.google.com.vn",
+        redirect_link: buildRedirectLink(pollingState.current),
         payload: bs58.encode(encryptedPayload),
       });
 
       const url = buildUrl("signAndSendTransaction", params);
       localStorage.setItem("url", url);
       console.log("Sending transaction...", url);
-
+      // setPoolingId(uuidv4());
       // window.open(url);
       (window as any)?.Telegram?.WebApp.openLink(url);
     } catch (error) {
       console.error("🚀 ~ signAndSendTransaction ~ error:", error);
     }
   };
+
+  useEffect(() => {
+    if (!poolingId) return;
+    const abortController = new AbortController();
+    async function getData() {
+      const res = await pollingDataFromPhantomWallet(
+        pollingState.current,
+        abortController
+      );
+      console.log("🚀 ~ getData ~ res:", res);
+    }
+    getData();
+    return () => abortController.abort();
+  }, [poolingId]);
 
   const onPaseConnectData = () => {
     const params = new URLSearchParams(DATA);
