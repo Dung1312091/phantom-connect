@@ -180,10 +180,7 @@ const DappConnect = () => {
       console.log("Sending transaction...", url);
 
       // window.open(url);
-      const newWindow = window.open("", "_blank");
-      if (newWindow) {
-        newWindow.location.href = url;
-      }
+      (window as any)?.Telegram?.WebApp.openLink(url);
     } catch (error) {
       console.error("🚀 ~ signAndSendTransaction ~ error:", error);
     }
