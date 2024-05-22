@@ -28,6 +28,9 @@ const NETWORK =
 const DATA =
   "phantom_encryption_public_key=ArLe9x4enicNfP9ywnJxyDBZKMBvYg9H5ZShsWrxWoff&nonce=CrAgCDx8QcEQU9nz4Jtyu99N537Ch73St&data=8VNf5dZ92vuwmw52cSpXxrTxUMR15cX6hco2a4GaeAzgduu4Aygi1bmAioj9MoFvNa6uCcoRD4zEbTtpMzgVpeFCpNiu9qWTQzuQXcd48K5wLNDJQs8TjVbAZ6aB995vhD2rGmwuUwJSDZTyHzWbzsXB7nsQGpNyY7JXLC4GfWdSRQ2z7SfdEdMmhSQu1mPd5FjwuEdvnoPrbVt4rkx6yX458kzdfjyv2bMLnEBeXm2N5i2MZxvhSfvY8ErAfnDVDjx7YxwnwsQw3C1ho2vN2dapUamnNPaxycrcKQatzbFr7V9GMGZvAWVws5r521pCXhzX4XoYeHF9oB2XtxMgRuZ5JAeDeZwbw9bK8VuyCDscTYL92VEV1CqwcJG9gcztYmVoLf9D4ZtBmtrNDFLpEbt3AtR6YMxH6f27jPbu49FoZmCc";
 
+const TRANSFER_DATA =
+  "data=TQ6csDgWuFXMHScnEPiYqp9Dbw12g1jq5zbnzrWwMVYDy4EiGg6Z2xCKAKTGVCcvWgcHRFEpqBnFCJiURpM5FmtjkDZGRW4xsyPieFKVmcu9tJXyZeySKGNQHohyxnFnQSKgCEXzRMgRYpJ66nqjsvsZ3i721m7JeVbKspM5eAi7NNQ2L2arivKkGt3ZYqtJtpLqw7q9A2quJg1q4MQuH592JLfnoPoMtMHJeKStHNCedeU836b&nonce=FScaoAp5gTJ3QgjmTvJ71hbCrN7gDmEGy";
+
 function initKeyPairs(): nacl.BoxKeyPair {
   const storedPublicKeyBase64 = localStorage.getItem("publicKey");
   const storedSecretKeyBase64 = localStorage.getItem("secretKey");
@@ -268,7 +271,8 @@ const DappConnect = () => {
       const params = new URLSearchParams({
         dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
         nonce: bs58.encode(nonce),
-        redirect_link: buildRedirectLink(pollingState.current),
+        // redirect_link: buildRedirectLink(pollingState.current),
+        redirect_link: "https://www.google.com",
         payload: bs58.encode(encryptedPayload),
       });
 
@@ -286,7 +290,6 @@ const DappConnect = () => {
   const signAndSendSLPTransaction = async () => {
     try {
       setPoolingId(POOLING_ID);
-
       pollingState.current = buildState(Methods.onSignAndSendTransaction);
       console.log("--------------------------------");
       const transaction = await buildSLPTransaction({
@@ -331,7 +334,47 @@ const DappConnect = () => {
         abortController
       );
       console.log("🚀 ~ getData ~ res:", res);
+      const params = new URLSearchParams(TRANSFER_DATA);
+      console.log("🚀 ~ getData ~ params:", params);
+      const phantom_encryption_public_key = params.get(
+        "phantom_encryption_public_key"
+      );
+      console.log(
+        "🚀 ~ onPaseConnectData ~ phantom_encryption_public_key:",
+        phantom_encryption_public_key
+      );
+      const nonce = params.get("nonce");
+      console.log("🚀 ~ getData ~ nonce:", nonce);
+      const data = params.get("data");
+      console.log("🚀 ~ getData ~ data:", data);
+      if (/onConnect/.test(pollingState.current)) {
+        const sharedSecretDapp = nacl.box.before(
+          bs58.decode(phantom_encryption_public_key!),
+          dappKeyPair.secretKey
+        );
+
+        const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
+
+        setSharedSecret(sharedSecretDapp);
+        setSession(connectData.session);
+        const PhantomPublicKey = new PublicKey(connectData.public_key);
+        setPhantomPublicKey(PhantomPublicKey);
+
+        console.log("🚀 ~ onPaseConnectData ~ connectData:", connectData);
+        storages.setSession(connectData.session);
+        storages.setPhanTomPublicKey(connectData.public_key);
+      } else if (/onSignAndSendTransaction/.test(pollingState.current)) {
+        const signAndSendTransactionData = decryptPayload(
+          params.get("data")!,
+          params.get("nonce")!,
+          sharedSecret
+        );
+        if (signAndSendTransactionData) {
+          console.log("signAndSendTransactionData", signAndSendTransactionData);
+        }
+      }
     }
+
     getData();
     return () => abortController.abort();
   }, [poolingId]);
