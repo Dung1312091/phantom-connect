@@ -178,8 +178,10 @@ const DappConnect = () => {
       const url = buildUrl("signAndSendTransaction", params);
       localStorage.setItem("url", url);
       console.log("Sending transaction...", url);
-      alert(url);
-      window.open(url);
+      setTimeout(() => {
+        window.open(url);
+      }, 1000);
+      // window.open(url);
 
       // window.open(url);
     } catch (error) {
