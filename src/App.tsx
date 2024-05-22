@@ -165,6 +165,7 @@ const DappConnect = () => {
       });
 
       const url = buildUrl("signAndSendTransaction", params);
+      console.log("Sending transaction...", url);
       window.open(url);
     } catch (error) {
       console.error("🚀 ~ signAndSendTransaction ~ error:", error);
