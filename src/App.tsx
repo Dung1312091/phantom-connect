@@ -25,15 +25,66 @@ import {
 const NETWORK =
   "https://broken-late-panorama.solana-mainnet.quiknode.pro/71a6fb542d7d3e0ae842f5804546b1ddeb0cbb70";
 
-const DATA =
-  "phantom_encryption_public_key=ArLe9x4enicNfP9ywnJxyDBZKMBvYg9H5ZShsWrxWoff&nonce=CrAgCDx8QcEQU9nz4Jtyu99N537Ch73St&data=8VNf5dZ92vuwmw52cSpXxrTxUMR15cX6hco2a4GaeAzgduu4Aygi1bmAioj9MoFvNa6uCcoRD4zEbTtpMzgVpeFCpNiu9qWTQzuQXcd48K5wLNDJQs8TjVbAZ6aB995vhD2rGmwuUwJSDZTyHzWbzsXB7nsQGpNyY7JXLC4GfWdSRQ2z7SfdEdMmhSQu1mPd5FjwuEdvnoPrbVt4rkx6yX458kzdfjyv2bMLnEBeXm2N5i2MZxvhSfvY8ErAfnDVDjx7YxwnwsQw3C1ho2vN2dapUamnNPaxycrcKQatzbFr7V9GMGZvAWVws5r521pCXhzX4XoYeHF9oB2XtxMgRuZ5JAeDeZwbw9bK8VuyCDscTYL92VEV1CqwcJG9gcztYmVoLf9D4ZtBmtrNDFLpEbt3AtR6YMxH6f27jPbu49FoZmCc";
+// const DATA =
+//   "phantom_encryption_public_key=ArLe9x4enicNfP9ywnJxyDBZKMBvYg9H5ZShsWrxWoff&nonce=CrAgCDx8QcEQU9nz4Jtyu99N537Ch73St&data=8VNf5dZ92vuwmw52cSpXxrTxUMR15cX6hco2a4GaeAzgduu4Aygi1bmAioj9MoFvNa6uCcoRD4zEbTtpMzgVpeFCpNiu9qWTQzuQXcd48K5wLNDJQs8TjVbAZ6aB995vhD2rGmwuUwJSDZTyHzWbzsXB7nsQGpNyY7JXLC4GfWdSRQ2z7SfdEdMmhSQu1mPd5FjwuEdvnoPrbVt4rkx6yX458kzdfjyv2bMLnEBeXm2N5i2MZxvhSfvY8ErAfnDVDjx7YxwnwsQw3C1ho2vN2dapUamnNPaxycrcKQatzbFr7V9GMGZvAWVws5r521pCXhzX4XoYeHF9oB2XtxMgRuZ5JAeDeZwbw9bK8VuyCDscTYL92VEV1CqwcJG9gcztYmVoLf9D4ZtBmtrNDFLpEbt3AtR6YMxH6f27jPbu49FoZmCc";
 
-const TRANSFER_DATA =
-  "nonce=FKLxFTJEfjdEkuNYJxues1HFPkHhSX5PS&data=4VY8ZMpw7kBkpTWyQZ7mruJ7WFHQDRTt1FjnhVDH8BVyxpTGWGeXmbbopzt2pu5bnEiUj6Y62nN93rdG9zzg3gWFbGi5CLtAqcoPoff5bPr64gZ1gtub4GsT8pbtYa7M9i6WhJygdFftSEVmVdRhNTGpG89zjYq7cDsuXZpwYmMAu56X8c6wMLMdprCHgV3eGG2gaBpPNHce29ojtmSp2iiP5YgPgRR9EaqFGVkAMATExNVHLL8MK";
+// const TRANSFER_DATA =
+//   "nonce=FKLxFTJEfjdEkuNYJxues1HFPkHhSX5PS&data=4VY8ZMpw7kBkpTWyQZ7mruJ7WFHQDRTt1FjnhVDH8BVyxpTGWGeXmbbopzt2pu5bnEiUj6Y62nN93rdG9zzg3gWFbGi5CLtAqcoPoff5bPr64gZ1gtub4GsT8pbtYa7M9i6WhJygdFftSEVmVdRhNTGpG89zjYq7cDsuXZpwYmMAu56X8c6wMLMdprCHgV3eGG2gaBpPNHce29ojtmSp2iiP5YgPgRR9EaqFGVkAMATExNVHLL8MK";
+const LOCAL_STORE_KEYS = {
+  KEYPAIR: {
+    PUBLIC_KEY: "publicKey",
+    SECRET_KEY: "secretKey",
+  },
+  SHARED_SECRET: "sharedSecret",
+  PHANTOM_WALLET_PUBLICKEY: "phantom_wallet_publicKey",
+  PHANTOM_CONNECT_SECCTION: "phantom_connect_secction",
+};
 
+const storages = {
+  setPhanTomWalletPublicKey: (v: string) => {
+    localStorage.setItem(LOCAL_STORE_KEYS.PHANTOM_WALLET_PUBLICKEY, v);
+  },
+  getPhanTomWalletPublicKey: () => {
+    const key = localStorage.getItem(LOCAL_STORE_KEYS.PHANTOM_WALLET_PUBLICKEY);
+    if (!key) return null;
+    return new PublicKey(key!);
+  },
+  setSession: (v: string) => {
+    return localStorage.setItem(LOCAL_STORE_KEYS.PHANTOM_CONNECT_SECCTION, v);
+  },
+  getSession: () => {
+    return localStorage.getItem(LOCAL_STORE_KEYS.PHANTOM_CONNECT_SECCTION);
+  },
+  setSharedSecret: (v: string) => {
+    return localStorage.setItem(LOCAL_STORE_KEYS.SHARED_SECRET, v);
+  },
+  getSharedSecret: () => {
+    return localStorage.getItem(LOCAL_STORE_KEYS.SHARED_SECRET);
+  },
+  setKeypairPublicKey: (v: string) => {
+    localStorage.setItem(LOCAL_STORE_KEYS.KEYPAIR.PUBLIC_KEY, v);
+  },
+  getKeypairPublicKey: () => {
+    return localStorage.getItem(LOCAL_STORE_KEYS.KEYPAIR.PUBLIC_KEY);
+  },
+  setKeypairSecretKey: (v: string) => {
+    localStorage.setItem(LOCAL_STORE_KEYS.KEYPAIR.SECRET_KEY, v);
+  },
+  getKeypairSecretKey: () => {
+    return localStorage.getItem(LOCAL_STORE_KEYS.KEYPAIR.SECRET_KEY);
+  },
+  reset: () => {
+    localStorage.removeItem(LOCAL_STORE_KEYS.KEYPAIR.PUBLIC_KEY);
+    localStorage.removeItem(LOCAL_STORE_KEYS.KEYPAIR.SECRET_KEY);
+    localStorage.removeItem(LOCAL_STORE_KEYS.SHARED_SECRET);
+    localStorage.removeItem(LOCAL_STORE_KEYS.PHANTOM_WALLET_PUBLICKEY);
+    localStorage.removeItem(LOCAL_STORE_KEYS.PHANTOM_CONNECT_SECCTION);
+  },
+};
 function initKeyPairs(): nacl.BoxKeyPair {
-  const storedPublicKeyBase64 = localStorage.getItem("publicKey");
-  const storedSecretKeyBase64 = localStorage.getItem("secretKey");
+  const storedPublicKeyBase64 = storages.getKeypairPublicKey();
+  const storedSecretKeyBase64 = storages.getKeypairSecretKey();
+
   if (storedPublicKeyBase64 && storedSecretKeyBase64) {
     const storedPublicKey = decodeBase64(storedPublicKeyBase64);
     const storedSecretKey = decodeBase64(storedSecretKeyBase64);
@@ -45,30 +96,15 @@ function initKeyPairs(): nacl.BoxKeyPair {
   const keypair = nacl.box.keyPair();
   const publicKeyBase64 = encodeBase64(keypair.publicKey);
   const secretKeyBase64 = encodeBase64(keypair.secretKey);
-  localStorage.setItem("publicKey", publicKeyBase64);
-  localStorage.setItem("secretKey", secretKeyBase64);
+  storages.setKeypairPublicKey(publicKeyBase64);
+  storages.setKeypairSecretKey(secretKeyBase64);
   return keypair;
 }
-const KEYS = {
-  PHANTOM_PUBLIC_KEY: "PHANTOM_PUBLIC_KEY",
-  PHANTOM_CONNECT_SECCTION: "PHANTOM_CONNECT_SECCTION",
-};
-const storages = {
-  setPhanTomPublicKey: (v: string) => {
-    localStorage.setItem(KEYS.PHANTOM_PUBLIC_KEY, v);
-  },
-  getPhanTomPublicKey: () => {
-    const key = localStorage.getItem(KEYS.PHANTOM_PUBLIC_KEY);
-    if (!key) return null;
-    return new PublicKey(key!);
-  },
-  setSession: (v: string) => {
-    return localStorage.setItem(KEYS.PHANTOM_CONNECT_SECCTION, v);
-  },
-  getSession: () => {
-    return localStorage.getItem(KEYS.PHANTOM_CONNECT_SECCTION);
-  },
-};
+function initSharedSecret() {
+  const sharedSecret = storages.getSharedSecret();
+  if (!sharedSecret) return null;
+  return decodeBase64(sharedSecret);
+}
 
 const decryptPayload = (
   data: string,
@@ -122,7 +158,7 @@ const pollingDataFromPhantomWallet = async (
           await new Promise((resolve) => setTimeout(resolve, 1000));
           return requestAnimationFrame(_poll);
         }
-        resolve(data);
+        resolve(data.data);
       } catch (e) {
         reject(e);
       }
@@ -142,19 +178,81 @@ const buildState = (method: string) => `${method}:${uuidv4()}`;
 
 const DappConnect = () => {
   const connection = new Connection(NETWORK);
-  const [dappKeyPair] = useState(() => initKeyPairs());
+  const [dappKeyPair, setDappKeyPair] = useState(() => initKeyPairs());
   const [session, setSession] = useState(() => storages.getSession());
   const [phantomPublicKey, setPhantomPublicKey] = useState(() =>
-    storages.getPhanTomPublicKey()
+    storages.getPhanTomWalletPublicKey()
   );
   const [poolingId, setPoolingId] = useState<string>("");
-  const [sharedSecret, setSharedSecret] = useState<Uint8Array>();
+  const [sharedSecret, setSharedSecret] = useState<Uint8Array | null>(() =>
+    initSharedSecret()
+  );
   const pollingState = useRef(buildState(Methods.onConnect));
   const buildUrl = (path: string, params: URLSearchParams) =>
     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
 
   const buildRedirectLink = (state: string) =>
     `https://dev-api.telifi.xyz/accounts/phantom/callback/${state}`;
+
+  useEffect(() => {
+    if (!poolingId) return;
+    const abortController = new AbortController();
+    async function getData() {
+      const res = await pollingDataFromPhantomWallet(
+        pollingState.current,
+        abortController
+      );
+      console.log("🚀 ~ getData ~ res:", res);
+      const params = new URLSearchParams(res);
+      console.log("🚀 ~ getData ~ params:", params);
+      const phantom_encryption_public_key = params.get(
+        "phantom_encryption_public_key"
+      );
+      console.log(
+        "phantom_encryption_public_key:",
+        phantom_encryption_public_key
+      );
+      const nonce = params.get("nonce");
+      console.log(" nonce:", nonce);
+      const data = params.get("data");
+      console.log("data:", data);
+      if (/onConnect/.test(pollingState.current)) {
+        const sharedSecretDapp = nacl.box.before(
+          bs58.decode(phantom_encryption_public_key!),
+          dappKeyPair.secretKey
+        );
+
+        const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
+
+        setSharedSecret(sharedSecretDapp);
+        setSession(connectData.session);
+        const PhantomPublicKey = new PublicKey(connectData.public_key);
+        setPhantomPublicKey(PhantomPublicKey);
+
+        console.log("🚀 ~ onPaseConnectData ~ connectData:", connectData);
+        storages.setSession(connectData.session);
+        storages.setPhanTomWalletPublicKey(connectData.public_key);
+        storages.setSharedSecret(encodeBase64(sharedSecretDapp));
+        console.log("on connect successful");
+      } else if (/onSignAndSendTransaction/.test(pollingState.current)) {
+        const signAndSendTransactionData = decryptPayload(
+          params.get("data")!,
+          params.get("nonce")!,
+          sharedSecret!
+        );
+        if (signAndSendTransactionData?.signature) {
+          console.log("send successfully", signAndSendTransactionData);
+        } else if (signAndSendTransactionData?.errorCode) {
+          console.log("send error", signAndSendTransactionData);
+        }
+      } else if (/onDisconnect/.test(pollingState.current)) {
+        console.log("Disconnected!");
+      }
+    }
+
+    getData();
+    return () => abortController.abort();
+  }, [dappKeyPair?.secretKey, poolingId, sharedSecret]);
 
   const onConnect = () => {
     // setPoolingId(POOLING_ID);
@@ -266,7 +364,7 @@ const DappConnect = () => {
         session,
         transaction: bs58.encode(serializedTransaction),
       };
-      const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret);
+      const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret!);
 
       const params = new URLSearchParams({
         dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
@@ -305,7 +403,7 @@ const DappConnect = () => {
         session,
         transaction: bs58.encode(serializedTransaction),
       };
-      const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret);
+      const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret!);
 
       const params = new URLSearchParams({
         dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
@@ -325,110 +423,75 @@ const DappConnect = () => {
     }
   };
 
-  useEffect(() => {
-    if (!poolingId) return;
-    const abortController = new AbortController();
-    async function getData() {
-      const res = await pollingDataFromPhantomWallet(
-        pollingState.current,
-        abortController
-      );
-      console.log("🚀 ~ getData ~ res:", res);
-      const params = new URLSearchParams(TRANSFER_DATA);
-      console.log("🚀 ~ getData ~ params:", params);
-      const phantom_encryption_public_key = params.get(
-        "phantom_encryption_public_key"
-      );
-      console.log(
-        "🚀 ~ onPaseConnectData ~ phantom_encryption_public_key:",
-        phantom_encryption_public_key
-      );
-      const nonce = params.get("nonce");
-      console.log("🚀 ~ getData ~ nonce:", nonce);
-      const data = params.get("data");
-      console.log("🚀 ~ getData ~ data:", data);
-      if (/onConnect/.test(pollingState.current)) {
-        const sharedSecretDapp = nacl.box.before(
-          bs58.decode(phantom_encryption_public_key!),
-          dappKeyPair.secretKey
-        );
+  // const onPaseConnectData = () => {
+  //   const params = new URLSearchParams(DATA);
+  //   const phantom_encryption_public_key = params.get(
+  //     "phantom_encryption_public_key"
+  //   );
+  //   console.log(
+  //     "🚀 ~ onPaseConnectData ~ phantom_encryption_public_key:",
+  //     phantom_encryption_public_key
+  //   );
+  //   const nonce = params.get("nonce");
+  //   const data = params.get("data");
+  //   const sharedSecretDapp = nacl.box.before(
+  //     bs58.decode(phantom_encryption_public_key!),
+  //     dappKeyPair.secretKey
+  //   );
 
-        const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
+  //   const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
 
-        setSharedSecret(sharedSecretDapp);
-        setSession(connectData.session);
-        const PhantomPublicKey = new PublicKey(connectData.public_key);
-        setPhantomPublicKey(PhantomPublicKey);
+  //   setSharedSecret(sharedSecretDapp);
+  //   setSession(connectData.session);
+  //   const PhantomPublicKey = new PublicKey(connectData.public_key);
+  //   setPhantomPublicKey(PhantomPublicKey);
 
-        console.log("🚀 ~ onPaseConnectData ~ connectData:", connectData);
-        storages.setSession(connectData.session);
-        storages.setPhanTomPublicKey(connectData.public_key);
-      } else if (/onSignAndSendTransaction/.test(pollingState.current)) {
-        const signAndSendTransactionData = decryptPayload(
-          params.get("data")!,
-          params.get("nonce")!,
-          sharedSecret
-        );
-        if (signAndSendTransactionData?.signature) {
-          console.log("send successfully", signAndSendTransactionData);
-        } else if (signAndSendTransactionData?.errorCode) {
-          console.log("send error", signAndSendTransactionData);
-        }
-      }
-    }
+  //   console.log("🚀 ~ onPaseConnectData ~ connectData:", connectData);
+  //   storages.setSession(connectData.session);
+  //   storages.setPhanTomWalletPublicKey(connectData.public_key);
+  // };
+  // const parseTransaction = () => {
+  //   const params = new URLSearchParams(TRANSFER_DATA);
 
-    getData();
-    return () => abortController.abort();
-  }, [dappKeyPair?.secretKey, poolingId, sharedSecret]);
+  //   const signAndSendTransactionData = decryptPayload(
+  //     params.get("data")!,
+  //     params.get("nonce")!,
+  //     sharedSecret!
+  //   );
+  //   if (signAndSendTransactionData) {
+  //     console.log("signAndSendTransactionData", signAndSendTransactionData);
+  //   }
+  // };
 
-  const onPaseConnectData = () => {
-    const params = new URLSearchParams(DATA);
-    const phantom_encryption_public_key = params.get(
-      "phantom_encryption_public_key"
-    );
-    console.log(
-      "🚀 ~ onPaseConnectData ~ phantom_encryption_public_key:",
-      phantom_encryption_public_key
-    );
-    const nonce = params.get("nonce");
-    const data = params.get("data");
-    const sharedSecretDapp = nacl.box.before(
-      bs58.decode(phantom_encryption_public_key!),
-      dappKeyPair.secretKey
-    );
+  const handleDisconnect = () => {
+    const payload = {
+      session,
+    };
+    pollingState.current = buildState(Methods.onDisconnect);
 
-    const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
+    const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret!);
 
-    setSharedSecret(sharedSecretDapp);
-    setSession(connectData.session);
-    const PhantomPublicKey = new PublicKey(connectData.public_key);
-    setPhantomPublicKey(PhantomPublicKey);
-
-    console.log("🚀 ~ onPaseConnectData ~ connectData:", connectData);
-    storages.setSession(connectData.session);
-    storages.setPhanTomPublicKey(connectData.public_key);
-  };
-  const parseTransaction = () => {
-    const params = new URLSearchParams(TRANSFER_DATA);
-
-    const signAndSendTransactionData = decryptPayload(
-      params.get("data")!,
-      params.get("nonce")!,
-      sharedSecret
-    );
-    if (signAndSendTransactionData) {
-      console.log("signAndSendTransactionData", signAndSendTransactionData);
-    }
+    const params = new URLSearchParams({
+      dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
+      nonce: bs58.encode(nonce),
+      redirect_link: buildRedirectLink(pollingState.current),
+      payload: bs58.encode(encryptedPayload),
+    });
+    storages.reset();
+    setDappKeyPair(initKeyPairs());
+    const url = buildUrl("disconnect", params);
+    (window as any)?.Telegram?.WebApp.openLink(url);
   };
   return (
     <div>
       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
       <button onClick={() => signAndSendTransaction()}>Deposit Ton</button>
-      <button onClick={() => onPaseConnectData()}>Parse</button>
+      {/* <button onClick={() => onPaseConnectData()}>Parse</button> */}
       <button onClick={() => signAndSendSLPTransaction()}>
         Sign SLP Token
       </button>
-      <button onClick={() => parseTransaction()}>Parse transaction</button>
+      {/* <button onClick={() => parseTransaction()}>Parse transaction</button> */}
+      <button onClick={() => handleDisconnect()}>Disconnect</button>
     </div>
   );
 };
