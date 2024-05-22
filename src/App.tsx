@@ -15,11 +15,11 @@ import {
 
 import {
   createTransferInstruction,
-  TOKEN_PROGRAM_ID,
+  // TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
-  createAssociatedTokenAccountInstruction,
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  getAccount,
+  // createAssociatedTokenAccountInstruction,
+  // ASSOCIATED_TOKEN_PROGRAM_ID,
+  // getAccount,
 } from "@solana/spl-token";
 const NETWORK =
   "https://broken-late-panorama.solana-mainnet.quiknode.pro/71a6fb542d7d3e0ae842f5804546b1ddeb0cbb70";
@@ -161,23 +161,23 @@ const DappConnect = () => {
     ).blockhash;
     return transaction;
   };
-  async function checkIfTokenAccountExists(
-    connection: any,
-    receiverTokenAccountAddress: PublicKey
-  ) {
-    try {
-      await getAccount(
-        connection,
-        receiverTokenAccountAddress,
-        "confirmed",
-        TOKEN_PROGRAM_ID
-      );
-      return true;
-    } catch (error) {
-      if ((error as Error).name === "TokenAccountNotFoundError") return false;
-      throw error;
-    }
-  }
+  // async function checkIfTokenAccountExists(
+  //   connection: any,
+  //   receiverTokenAccountAddress: PublicKey
+  // ) {
+  //   try {
+  //     await getAccount(
+  //       connection,
+  //       receiverTokenAccountAddress,
+  //       "confirmed",
+  //       TOKEN_PROGRAM_ID
+  //     );
+  //     return true;
+  //   } catch (error) {
+  //     if ((error as Error).name === "TokenAccountNotFoundError") return false;
+  //     throw error;
+  //   }
+  // }
   async function buildSLPTransaction({
     tokenAddress,
   }: {
@@ -192,22 +192,22 @@ const DappConnect = () => {
       tokenMint,
       new PublicKey("9JMKSAKuz6amkRXnYdGj8AnpJGCrtVcPQSSkcYWcnDUd")
     );
-    const isTokenAccountAlreadyMade = await checkIfTokenAccountExists(
-      connection,
-      toTokenAccount
-    );
+    // const isTokenAccountAlreadyMade = await checkIfTokenAccountExists(
+    //   connection,
+    //   toTokenAccount
+    // );
     const transferTransaction = new Transaction();
-    if (!isTokenAccountAlreadyMade) {
-      const createAccountInstruction = createAssociatedTokenAccountInstruction(
-        phantomPublicKey!,
-        toTokenAccount,
-        new PublicKey("9JMKSAKuz6amkRXnYdGj8AnpJGCrtVcPQSSkcYWcnDUd"),
-        tokenMint,
-        TOKEN_PROGRAM_ID,
-        ASSOCIATED_TOKEN_PROGRAM_ID
-      );
-      transferTransaction.add(createAccountInstruction);
-    }
+    // if (!isTokenAccountAlreadyMade) {
+    //   const createAccountInstruction = createAssociatedTokenAccountInstruction(
+    //     phantomPublicKey!,
+    //     toTokenAccount,
+    //     new PublicKey("9JMKSAKuz6amkRXnYdGj8AnpJGCrtVcPQSSkcYWcnDUd"),
+    //     tokenMint,
+    //     TOKEN_PROGRAM_ID,
+    //     ASSOCIATED_TOKEN_PROGRAM_ID
+    //   );
+    //   transferTransaction.add(createAccountInstruction);
+    // }
     // const amountTransfer = getSolCoinTransferBalance(sendData.amount, sendData.token.decimals);
     const transferInstruction = await createTransferInstruction(
       fromTokenAccount,
