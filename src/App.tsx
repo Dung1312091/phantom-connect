@@ -153,7 +153,7 @@ const pollingDataFromPhantomWallet = async (
           }
         );
         const data = await res.json();
-        console.log("🚀 ~ const_poll= ~ data:", data);
+        console.log("🚀 ~ const_poll= ~ data:", data?.data);
         if (!data?.data) {
           await new Promise((resolve) => setTimeout(resolve, 1000));
           return requestAnimationFrame(_poll);
@@ -252,7 +252,7 @@ const DappConnect = () => {
 
     getData();
     return () => abortController.abort();
-  }, [dappKeyPair?.secretKey, poolingId, sharedSecret]);
+  }, [dappKeyPair?.secretKey, poolingId]);
 
   const onConnect = () => {
     // setPoolingId(POOLING_ID);
