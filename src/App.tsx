@@ -6,9 +6,17 @@ import { Buffer } from "buffer";
 import { useState } from "react";
 import nacl from "tweetnacl";
 import { encodeBase64, decodeBase64 } from "tweetnacl-util";
+import {
+  clusterApiUrl,
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
+const NETWORK = clusterApiUrl("mainnet-beta");
 
 const DATA =
-  "phantom_encryption_public_key=Gb5eMKg5Y8yHeEu4nhKukJ8ZMQ2KfHavn6CQXVxUBPWp&nonce=77Q7aQ3zF6TpUt1Ruh4BLoUH2RC7zdzrX&data=AAauk53iHKThYHaUFi47L6Gm5BWqaMWqEdr7C1E6qGnxxDhrVJkrBdj9W7y6kpyFTuWeGf2tEQYqpVASmLUFDj9HdTASiUpbsL55i7nycNYXmkwhSixubfhCUhiE27WZAseLXXuMZ2dcnZhZEuDcTLmuKQjwzhawmWP5sUixy4yBdjQzZj83LW3VTLbqWX2niQFzTymRBwbhSasYaKW18xQG9tyXHEYE1jmkrFZCchzbTQK2pqZecdtWA4q7i2XJ4wvoG2UPx1NXbS8tbeeUGED7UUjQ1Mpu98gsKKEACNYGAjzP5zXY2nqpqa7W681LW8fnRVFwpt9keVaor7XH6wiS1RHE9yHYEd8k6o2zdhEuvFUPansV628HMGvBJsEGZFfPKPyE6Xp7XfsFWffNu2VBU8p95T1X6yPDxF8Ric3Lw5Ru";
+  "phantom_encryption_public_key=64zdmwm7wDiz1HJjxkv67rqPvxJcA9xiX5jSJDM333b5&nonce=3nJ9Q25JHrCigaGBV28yPXhbzzVnhyS7c&data=ukMfUa7ghAUqzopNqpNkb1obw9npq5xh2L95Lw5g7kUNbRoCSvpQLd9MLvPoKEEWgVANZE9gVghpvG7VVJcKLd7BPEw5vTomabWn38g2bHY8QhxGR7SaL2e2HrdM9jxJe4TnHEdLuCiC1gBjUEDkXb1zSkKwEYV4hqbM66Cknby2ejb5Luh3Rt2ng1QupWW8CRDpxaGboPRZoCMDs71A3xSozn41aoD8eKWFPkXKHX7dZdq7mrUNDeC73PFhouch7CixabQTTaAaSSGS5XygMnfJVtYXWMv53c1Nn17mpdR4g3m9KqXh6w6SaCcdH8fhDszN8F8p86geFAVvqVwgzrEqjjxbqwSntqMkPyfuaC3K3a31XwAuo33ghdZBKPZsCoNkBfm35W2fekBbP6iFyTuWjEipgS6gwi3cx5Xo5kpnzv";
 
 function initKeyPairs(): nacl.BoxKeyPair {
   const storedPublicKeyBase64 =
@@ -45,9 +53,68 @@ function initKeyPairs(): nacl.BoxKeyPair {
   console.log("-----2", nacl.verify(storedSecretKey, keypair.secretKey)); // true
   return keypair;
 }
+const KEYS = {
+  PHANTOM_PUBLIC_KEY: "PHANTOM_PUBLIC_KEY",
+  PHANTOM_CONNECT_SECCTION: "PHANTOM_CONNECT_SECCTION",
+};
+const storages = {
+  setPhanTomPublicKey: (v: string) => {
+    localStorage.setItem(KEYS.PHANTOM_PUBLIC_KEY, v);
+  },
+  getPhanTomPublicKey: () => {
+    const key = localStorage.getItem(KEYS.PHANTOM_PUBLIC_KEY);
+    if (!key) return null;
+    return new PublicKey(key!);
+  },
+  setSession: (v: string) => {
+    return localStorage.setItem(KEYS.PHANTOM_CONNECT_SECCTION, v);
+  },
+  getSession: () => {
+    return localStorage.getItem(KEYS.PHANTOM_CONNECT_SECCTION);
+  },
+};
+
+const decryptPayload = (
+  data: string,
+  nonce: string,
+  sharedSecret?: Uint8Array
+) => {
+  if (!sharedSecret) throw new Error("missing shared secret");
+
+  const decryptedData = nacl.box.open.after(
+    bs58.decode(data),
+    bs58.decode(nonce),
+    sharedSecret
+  );
+  console.log("🚀 ~ DappConnect ~ decryptedData:", decryptedData);
+  if (!decryptedData) {
+    throw new Error("Unable to decrypt data");
+  }
+  return JSON.parse(Buffer.from(decryptedData).toString("utf8"));
+};
+
+const encryptPayload = (payload: any, sharedSecret?: Uint8Array) => {
+  if (!sharedSecret) throw new Error("missing shared secret");
+
+  const nonce = nacl.randomBytes(24);
+
+  const encryptedPayload = nacl.box.after(
+    Buffer.from(JSON.stringify(payload)),
+    nonce,
+    sharedSecret
+  );
+
+  return [nonce, encryptedPayload];
+};
 
 const DappConnect = () => {
+  const connection = new Connection(NETWORK);
   const [dappKeyPair] = useState(() => initKeyPairs());
+  const [session, setSession] = useState(() => storages.getSession());
+  const [phantomPublicKey, setPhantomPublicKey] = useState(() =>
+    storages.getPhanTomPublicKey()
+  );
+  const [sharedSecret, setSharedSecret] = useState<Uint8Array>();
 
   const buildUrl = (path: string, params: URLSearchParams) =>
     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
@@ -62,46 +129,44 @@ const DappConnect = () => {
     console.log("url", url);
     window.open(url);
   };
-
-  const decryptPayload = (
-    data: string,
-    nonce: string,
-    sharedSecret?: Uint8Array
-  ) => {
-    if (!sharedSecret) throw new Error("missing shared secret");
-
-    const decryptedData = nacl.box.open.after(
-      bs58.decode(data),
-      bs58.decode(nonce),
-      sharedSecret
+  const createTransferTransaction = async () => {
+    if (!phantomPublicKey) throw new Error("missing public key from user");
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: phantomPublicKey,
+        toPubkey: new PublicKey("9JMKSAKuz6amkRXnYdGj8AnpJGCrtVcPQSSkcYWcnDUd"),
+        lamports: 100,
+      })
     );
-    console.log("🚀 ~ DappConnect ~ decryptedData:", decryptedData);
-    if (!decryptedData) {
-      throw new Error("Unable to decrypt data");
-    }
-    return JSON.parse(Buffer.from(decryptedData).toString("utf8"));
+    transaction.feePayer = phantomPublicKey;
+    const anyTransaction: any = transaction;
+    anyTransaction.recentBlockhash = (
+      await connection.getLatestBlockhash()
+    ).blockhash;
+    return transaction;
   };
-  const onTransfer = () => {
-    const params = new URLSearchParams(DATA);
-    console.log("🚀 ~ onTransfer ~ params:", params);
-    const phantom_encryption_public_key = params.get(
-      "phantom_encryption_public_key"
-    );
-    const nonce = params.get("nonce");
-    const data = params.get("data");
+  const signAndSendTransaction = async () => {
+    const transaction = await createTransferTransaction();
 
-    console.log(
-      "🚀 ~ onTransfer ~ phantom_encryption_public_key:",
-      { phantom_encryption_public_key },
-      { nonce },
-      { data }
-    );
-    const sharedSecretDapp = nacl.box.before(
-      bs58.decode(phantom_encryption_public_key!),
-      dappKeyPair.secretKey
-    );
-    const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
-    console.log("🚀 ~ onTransfer ~ connectData:", connectData);
+    const serializedTransaction = transaction.serialize({
+      requireAllSignatures: false,
+    });
+
+    const payload = {
+      session,
+      transaction: bs58.encode(serializedTransaction),
+    };
+    const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret);
+
+    const params = new URLSearchParams({
+      dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
+      nonce: bs58.encode(nonce),
+      redirect_link: "https://www.google.com.vn",
+      payload: bs58.encode(encryptedPayload),
+    });
+
+    const url = buildUrl("signAndSendTransaction", params);
+    window.open(url);
   };
 
   const onPaseConnectData = () => {
@@ -122,16 +187,20 @@ const DappConnect = () => {
 
     const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
 
-    // setSharedSecret(sharedSecretDapp);
-    // setSession(connectData.session);
-    // setPhantomWalletPublicKey(new PublicKey(connectData.public_key));
+    setSharedSecret(sharedSecretDapp);
+    setSession(connectData.session);
+    const PhantomPublicKey = new PublicKey(connectData.public_key);
+    setPhantomPublicKey(PhantomPublicKey);
+
     console.log("🚀 ~ onPaseConnectData ~ connectData:", connectData);
+    storages.setSession(connectData.session);
+    storages.setPhanTomPublicKey(connectData.public_key);
   };
 
   return (
     <div>
       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
-      <button onClick={() => onTransfer()}>Deposit Ton</button>
+      <button onClick={() => signAndSendTransaction()}>Deposit Ton</button>
       <button onClick={() => onPaseConnectData()}>Parse</button>
     </div>
   );
