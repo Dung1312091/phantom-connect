@@ -178,12 +178,12 @@ const DappConnect = () => {
       const url = buildUrl("signAndSendTransaction", params);
       localStorage.setItem("url", url);
       console.log("Sending transaction...", url);
-      setTimeout(() => {
-        window.open(url);
-      }, 1000);
-      // window.open(url);
 
       // window.open(url);
+      const newWindow = window.open("", "_blank");
+      if (newWindow) {
+        newWindow.location.href = url;
+      }
     } catch (error) {
       console.error("🚀 ~ signAndSendTransaction ~ error:", error);
     }
