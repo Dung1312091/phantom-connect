@@ -138,6 +138,9 @@ export const App = () => {
           themeVariables: {
             "--wcm-z-index": "100000",
           },
+          explorerExcludedWalletIds: [
+            "4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0",
+          ],
         },
         metadata: {
           name: "Tobi Token Bot",
