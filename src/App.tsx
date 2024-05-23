@@ -153,7 +153,7 @@ export const App = () => {
   }, []);
   useEffect(() => {
     EventsCtrl.subscribe(async (event) => {
-      console.log("event", event);
+      // console.log("event", event);
       console.log(
         " ExplorerCtrl.state?.recomendedWallets",
         ExplorerCtrl.state?.recomendedWallets
@@ -162,9 +162,9 @@ export const App = () => {
       const wallet = ExplorerCtrl.state?.recomendedWallets?.find(
         (wallet) => wallet.id === (event.data as any)?.walletId
       );
+      console.log("wallet", wallet);
       const walletssss = await ExplorerCtrl.getWallets({});
       console.log("🚀 ~ EventsCtrl.subscribe ~ walletssss:", walletssss);
-      console.log("wallet", wallet);
       const walletUrl = wallet?.mobile?.universal;
       // const name = wallet?.name;
       if (walletUrl) {
