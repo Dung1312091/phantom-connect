@@ -120,8 +120,8 @@ import { EventsCtrl, ExplorerCtrl } from "@walletconnect/modal-core";
 export const App = () => {
   // const [isConnecting, setIsConnecting] = useState(false);
   const [provider, setProvider] = useState<any>(undefined);
-  console.log("🚀 ~ App ~ provider:", provider);
-  console.log("----------------session", provider?.session);
+  // console.log("🚀 ~ App ~ provider:", provider);
+  // console.log("----------------session", provider?.session);
   const [uri, setUri] = useState("");
   // const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
@@ -154,17 +154,14 @@ export const App = () => {
   useEffect(() => {
     EventsCtrl.subscribe(async (event) => {
       // console.log("event", event);
-      console.log(
-        " ExplorerCtrl.state?.recomendedWallets",
-        ExplorerCtrl.state?.recomendedWallets
-      );
-      console.log(" ExplorerCtrl.state?.wallets", ExplorerCtrl.state?.wallets);
+      console.log("recomendedWallets", ExplorerCtrl.state?.recomendedWallets);
+      console.log("wallets", ExplorerCtrl.state?.wallets);
       const wallet = ExplorerCtrl.state?.recomendedWallets?.find(
         (wallet) => wallet.id === (event.data as any)?.walletId
       );
       console.log("wallet", wallet);
-      const walletssss = await ExplorerCtrl.getWallets({});
-      console.log("🚀 ~ EventsCtrl.subscribe ~ walletssss:", walletssss);
+      // const walletssss = await ExplorerCtrl.getWallets({});
+      // console.log("🚀 ~ EventsCtrl.subscribe ~ walletssss:", walletssss);
       const walletUrl = wallet?.mobile?.universal;
       // const name = wallet?.name;
       if (walletUrl) {
