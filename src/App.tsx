@@ -116,7 +116,7 @@
 
 import { useEffect, useState } from "react";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
-import { EventsCtrl, ExplorerCtrl } from "@walletconnect/modal-core";
+import { CoreUtil, EventsCtrl, ExplorerCtrl } from "@walletconnect/modal-core";
 export const App = () => {
   // const [isConnecting, setIsConnecting] = useState(false);
   const [provider, setProvider] = useState<any>(undefined);
@@ -163,10 +163,11 @@ export const App = () => {
       // const walletssss = await ExplorerCtrl.getWallets({});
       // console.log("🚀 ~ EventsCtrl.subscribe ~ walletssss:", walletssss);
       const walletUrl = wallet?.mobile?.universal;
+      console.log("🚀 ~ EventsCtrl.subscribe ~ walletUrl:", walletUrl);
       // const name = wallet?.name;
       if (walletUrl) {
-        // const href = CoreUtil.formatUniversalUrl(walletUrl, uri, name!);
-        // CoreUtil.openHref(href, "_self");
+        const href = CoreUtil.formatUniversalUrl(walletUrl, uri, name!);
+        CoreUtil.openHref(href, "_self");
         // (window as any).Telegram.WebApp.openLink(href);
       }
     });
