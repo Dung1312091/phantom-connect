@@ -167,6 +167,7 @@ export const App = () => {
       // const name = wallet?.name;
       if (walletUrl) {
         const href = CoreUtil.formatUniversalUrl(walletUrl, uri, name!);
+        console.log("🚀 ~ EventsCtrl.subscribe ~ href:", href);
         CoreUtil.openHref(href, "_self");
         // (window as any).Telegram.WebApp.openLink(href);
       }
