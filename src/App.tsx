@@ -1,248 +1,93 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// /* eslint-disable @typescript-eslint/no-unused-vars */
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import bs58 from "bs58";
-// import { Buffer } from "buffer";
-// import { useState } from "react";
-// import nacl from "tweetnacl";
-// const DATA =
-//   "phantom_encryption_public_key=JAgRqyJja9Y694ayFWc4HnbKiJPmMCbdpBoyYbg5CLTS&nonce=7XeUnuxFfeE9atnGrKw9q9qkZTG5njPrD&data=3tg1zW9sVraqXcoAo21tiSpLkscynYjLLhiVfzzJWBWPdNZXQrQM4rW1pVKgn8WctA4S7rALkMcwjuWoTXRaebbtcPnP74h5Xy9SRFS9tCftRFoZBAZq1dt3Q14DW7SxzzfhvFtiNwVLY1EnxDnCfSNeg4WJYRnMctDmQdWBwGw9dFNGwHrpdWLHGsLooZTtCS5gr1Y114zUeZQCvVKjxfXDdyUzj1eTxZLQjm4cps9nMWXwJYRpsDMgUFa8L5Hc7xcp6QH7uBfyvd5v5YYe9PxFhovxribmxisaQYyUVKFtira73rUNzkpFx2SxW4kYWPKU267cwGvgSQrCXnjuxigz49xZ6bVpVSoNWuqtqiQFm3iBvx7pnaMSLc1KPVGtK1fHvxAmWrn6QTm6mG6zB65eGcybbQCmPRSNEwCSS9awtumb&gfe_rd=mr&pli=1";
-// // export const decodeBase64 = (b64: string) =>
-// //   Uint8Array.from(atob(b64), (b) => b.charCodeAt(0));
-// // export const encodeBase64 = (b: any) =>
-// //   btoa(String.fromCodePoint.apply(null, b));
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useState } from "react";
+import "./App.css";
+import PullToRefresh from "react-simple-pull-to-refresh";
+const DEFAULT_VALUES = {
+  isPullable: true,
+  canFetchMore: false,
+  fetchMoreThreshold: 100,
+  pullDownThreshold: 67,
+  maxPullDownDistance: 95,
+  resistance: 1,
+};
+const FAKE_LIST: number[] = [];
+for (let i = 0; i < 200; i++) {
+  FAKE_LIST.push(i);
+}
+const App: React.FC = () => {
+  // prettier-ignore
 
-// // const KeyPair = {
-// //   publicKey: "56os8hxWZGxbGIRqVOp8qUIoy+cdSrJLFjRer97sOmM=",
-// //   secretKey: "nYnYQERbZQkKdKpiyRTcVIIoMsr1GNHUkqGvPnNCkwc=",
-// // };
+  const [list, setList] = useState<number[]>(FAKE_LIST);
+  const [isPullable, setIsPullable] = useState<boolean>(
+    DEFAULT_VALUES.isPullable
+  );
+  const [canFetchMore, setCanFetchMore] = useState<boolean>(
+    DEFAULT_VALUES.canFetchMore
+  );
+  const [fetchMoreThreshold, setFetchMoreThreshold] = useState<number>(
+    DEFAULT_VALUES.fetchMoreThreshold
+  );
+  const [pullDownThreshold, setPullDownThreshold] = useState<number>(
+    DEFAULT_VALUES.pullDownThreshold
+  );
+  const [maxPullDownDistance, setMaxPullDownDistance] = useState<number>(
+    DEFAULT_VALUES.maxPullDownDistance
+  );
+  const [resistance, setResistance] = useState<number>(
+    DEFAULT_VALUES.resistance
+  );
 
-// const DappConnect = () => {
-//   // const [dappKeyPair] = useState({
-//   //   publicKey: decodeBase64(KeyPair.publicKey),
-//   //   secretKey: decodeBase64(KeyPair.secretKey),
-//   // });
-//   const [dappKeyPair] = useState(nacl.box.keyPair());
-//   // console.log("🚀 ~ DappConnect ~ dappKeyPair:", dappKeyPair);
-//   // const publicKey = encodeBase64(dappKeyPair.publicKey);
-//   // const secretKey = encodeBase64(dappKeyPair.secretKey);
-//   // console.log("🚀 ~ DappConnect ~ secretKey:", secretKey);
-//   // const xpublicKey = decodeBase64(publicKey);
-//   // console.log("🚀 ~ DappConnect ~ xpublicKey:", xpublicKey);
-//   // console.log("🚀 ~ DappConnect ~ xpublicKey:", xpublicKey);
-//   // const xsecretKey = decodeBase64(secretKey);
-//   // console.log("🚀 ~ DappConnect ~ xsecretKey:", xsecretKey);
+  const handleReset = (): void => {
+    setIsPullable(DEFAULT_VALUES.isPullable);
+    setCanFetchMore(DEFAULT_VALUES.canFetchMore);
+    setFetchMoreThreshold(DEFAULT_VALUES.fetchMoreThreshold);
+    setPullDownThreshold(DEFAULT_VALUES.pullDownThreshold);
+    setMaxPullDownDistance(DEFAULT_VALUES.maxPullDownDistance);
+    setResistance(DEFAULT_VALUES.resistance);
+  };
 
-//   const buildUrl = (path: string, params: URLSearchParams) =>
-//     `https://phantom.app/ul/v1/${path}?${params.toString()}`;
-//   const onConnect = () => {
-//     const params = new URLSearchParams({
-//       dapp_encryption_public_key: bs58.encode(dappKeyPair.publicKey),
-//       cluster: "mainnet-beta",
-//       app_url: "https://phantom.app",
-//       redirect_link: "https://www.google.com.vn",
-//     });
-//     const url = buildUrl("connect", params);
-//     console.log("url", url);
-//     window.open(url);
-//   };
-//   function openMetaMaskUrl(url: string) {
-//     const a = document.createElement("a");
-//     a.href = url;
-//     a.target = "_self";
-//     document.body.appendChild(a);
-//     a.click();
-//     a.remove();
-//   }
-//   const decryptPayload = (
-//     data: string,
-//     nonce: string,
-//     sharedSecret?: Uint8Array
-//   ) => {
-//     if (!sharedSecret) throw new Error("missing shared secret");
-
-//     const decryptedData = nacl.box.open.after(
-//       bs58.decode(data),
-//       bs58.decode(nonce),
-//       sharedSecret
-//     );
-//     console.log("🚀 ~ DappConnect ~ decryptedData:", decryptedData);
-//     if (!decryptedData) {
-//       throw new Error("Unable to decrypt data");
-//     }
-//     return JSON.parse(Buffer.from(decryptedData).toString("utf8"));
-//   };
-//   const onTransfer = () => {
-//     const params = new URLSearchParams(DATA);
-//     console.log("🚀 ~ onTransfer ~ params:", params);
-//     const phantom_encryption_public_key = params.get(
-//       "phantom_encryption_public_key"
-//     );
-//     const nonce = params.get("nonce");
-//     const data = params.get("data");
-//     const public_key = params.get("public_key");
-//     const session = params.get("session");
-//     console.log(
-//       "🚀 ~ onTransfer ~ phantom_encryption_public_key:",
-//       { phantom_encryption_public_key },
-//       { nonce },
-//       { data },
-//       { public_key },
-//       { session }
-//     );
-//     const sharedSecretDapp = nacl.box.before(
-//       bs58.decode(params.get("phantom_encryption_public_key")!),
-//       dappKeyPair.secretKey
-//     );
-//     const connectData = decryptPayload(data!, nonce!, sharedSecretDapp);
-//     console.log("🚀 ~ onTransfer ~ connectData:", connectData);
-//   };
-
-//   return (
-//     <div>
-//       <button onClick={() => onConnect()}>Connect Phantom Wallet 1</button>
-//       <button onClick={() => onTransfer()}>Deposit Ton</button>
-//       <button onClick={() => openMetaMaskUrl("https://metamask.app.link/")}>
-//         Open metamask
-//       </button>
-//     </div>
-//   );
-// };
-
-// const App = () => {
-//   return <DappConnect />;
-// };
-// export default App;
-
-import { useEffect, useState } from "react";
-import { EthereumProvider } from "@walletconnect/ethereum-provider";
-import { CoreUtil, EventsCtrl, ExplorerCtrl } from "@walletconnect/modal-core";
-export const App = () => {
-  // const [isConnecting, setIsConnecting] = useState(false);
-  const [provider, setProvider] = useState<any>(undefined);
-  // console.log("🚀 ~ App ~ provider:", provider);
-  // console.log("----------------session", provider?.session);
-  const [uri, setUri] = useState("");
-  // const [isDisconnecting, setIsDisconnecting] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(true);
-
-  useEffect(() => {
-    async function initProvider() {
-      const provider = await EthereumProvider.init({
-        projectId: "108fb42acd2ea6ecab66593e3e948204",
-        chains: [1],
-        methods: ["personal_sign", "eth_sendTransaction"],
-        showQrModal: true,
-        qrModalOptions: {
-          themeMode: "light",
-          themeVariables: {
-            "--wcm-z-index": "100000",
-          },
-          explorerExcludedWalletIds: [
-            "4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0",
-          ],
-          explorerRecommendedWalletIds: [
-            "c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96",
-            "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369",
-            "225affb176778569276e484e1b92637ad061b01e13a048b35a9d280c3b58970f",
-            "c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a",
-            "ecc4036f814562b41a5268adc86270fba1365471402006302e70169465b7ac18",
-            "ef333840daf915aafdc4a004525502d6d49d77bd9c65e0642dbaefb3c2893bef",
-            "bc949c5d968ae81310268bf9193f9c9fb7bb4e1283e1284af8f2bd4992535fd6",
-          ],
-        },
-        metadata: {
-          name: "Tobi Token Bot",
-          description: "Wallet for WalletConnect",
-          url: "https://www.tobi.fun/",
-          icons: ["https://app.tobiwallet.app/icons/favicon.png"],
-        },
-      });
-      setProvider(provider);
-      setIsInitializing(false);
-    }
-    initProvider();
-  }, []);
-  useEffect(() => {
-    EventsCtrl.subscribe(async (event) => {
-      // console.log("event", event);
-      console.log("recomendedWallets", ExplorerCtrl.state?.recomendedWallets);
-      console.log("wallets", ExplorerCtrl.state?.wallets);
-      const wallet = ExplorerCtrl.state?.recomendedWallets?.find(
-        (wallet) => wallet.id === (event.data as any)?.walletId
-      );
-      console.log("wallet", wallet);
-      // const walletssss = await ExplorerCtrl.getWallets({});
-      // console.log("🚀 ~ EventsCtrl.subscribe ~ walletssss:", walletssss);
-      const walletUrl = wallet?.mobile?.universal;
-      console.log("🚀 ~ EventsCtrl.subscribe ~ walletUrl:", walletUrl);
-      // const name = wallet?.name;
-      if (walletUrl) {
-        const href = CoreUtil.formatUniversalUrl(walletUrl, uri, name!);
-        console.log("🚀 ~ EventsCtrl.subscribe ~ href:", href);
-        // CoreUtil.openHref(href, "_self");
-        (window as any).Telegram.WebApp.openLink(href);
-      }
+  const getNewData = (): Promise<void> => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        res(setList([...list, ...FAKE_LIST]));
+      }, 1500);
     });
-  }, [uri]);
-  useEffect(() => {
-    if (!provider) return;
-    provider.on("display_uri", (uri: string) => {
-      console.log("🚀 ~ provider.on ~ uri:", uri);
-      setUri(uri);
-      // setIsConnecting(false);
-    });
-  }, [provider]);
+  };
 
-  useEffect(() => {
-    if (!provider) return;
-    provider.on("accountsChanged", (account: any) => {
-      console.log("on account change", account);
-    });
-  }, [provider]);
-
-  async function onConnect() {
-    try {
-      // setIsConnecting(true);
-      await provider.connect();
-      // setOpenDepositEvmAssets(true);
-    } catch (error) {
-      console.log("onConnect error:", error);
-      throw new Error("providerClient is not initialized");
-    } finally {
-      // setIsConnecting(false);
-      // setUri("");
-    }
-  }
-
-  async function handleDisconnect() {
-    try {
-      // setIsDisconnecting(true);
-      await provider.disconnect();
-    } catch (error) {
-      console.error("disconnect error", error);
-    } finally {
-      console.log("disconnect");
-      // setIsDisconnecting(false);
-    }
-  }
-  console.log("isInitializing", isInitializing);
   return (
-    <div>
-      <button
-        onClick={() => {
-          if (isInitializing) return;
-          if (!provider?.accounts[0] && !provider?.session) {
-            onConnect();
-          } else {
-            handleDisconnect();
-            console.log("provider", provider);
-          }
-        }}
-      >
-        Onclick1
-      </button>
+    <div className="App">
+      <div className="App-commands"></div>
+      <div className="App-ptr">
+        <PullToRefresh
+          onRefresh={getNewData}
+          canFetchMore={canFetchMore}
+          isPullable={isPullable}
+          onFetchMore={getNewData}
+          fetchMoreThreshold={fetchMoreThreshold}
+          pullDownThreshold={pullDownThreshold}
+          maxPullDownDistance={maxPullDownDistance}
+          pullingContent=""
+          resistance={resistance}
+        >
+          <>
+            <header className="App-header">
+              <h1>Demo App</h1>
+              <h2>Pull To Refresh</h2>
+            </header>
+            <div className="App-container">
+              <ul>
+                {list.map((item: number, index: number) => (
+                  <li key={index}>
+                    {index + 1} - {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        </PullToRefresh>
+      </div>
     </div>
   );
 };
+
 export default App;
