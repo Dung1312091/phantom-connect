@@ -56,7 +56,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <div className="App-commands"></div>
+      <div className="App-commands" onClick={() => handleReset()}></div>
       <div className="App-ptr">
         <PullToRefresh
           onRefresh={getNewData}
