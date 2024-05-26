@@ -66,7 +66,7 @@ const App: React.FC = () => {
           fetchMoreThreshold={fetchMoreThreshold}
           pullDownThreshold={pullDownThreshold}
           maxPullDownDistance={maxPullDownDistance}
-          pullingContent=""
+          pullingContent={<div>AAAA</div>}
           resistance={resistance}
         >
           <>
