@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import PullToRefresh from "react-simple-pull-to-refresh";
+import { LoadingSpinner } from "./Refresh";
 const DEFAULT_VALUES = {
   isPullable: true,
   canFetchMore: false,
@@ -66,9 +67,9 @@ const App: React.FC = () => {
           fetchMoreThreshold={fetchMoreThreshold}
           pullDownThreshold={pullDownThreshold}
           maxPullDownDistance={maxPullDownDistance}
-          pullingContent={<div>AAAA</div>}
+          pullingContent={""}
           resistance={resistance}
-          refreshingContent={<div>BBBBB</div>}
+          refreshingContent={<LoadingSpinner />}
         >
           <>
             <header className="App-header">
