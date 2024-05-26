@@ -68,6 +68,7 @@ const App: React.FC = () => {
           maxPullDownDistance={maxPullDownDistance}
           pullingContent={<div>AAAA</div>}
           resistance={resistance}
+          refreshingContent={<div>BBBBB</div>}
         >
           <>
             <header className="App-header">
