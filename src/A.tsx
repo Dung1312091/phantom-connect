@@ -19,7 +19,7 @@ export const A = () => {
       <p>A component: {receivedMessage}</p>
       <button
         onClick={() => {
-          (window as any).Telegram.WebApp.openTelegramLink(
+          (window as any).Telegram.WebApp.openLink(
             "https://t.me/mpc_wallet_connect_bot/tobi_wallet"
           );
         }}
