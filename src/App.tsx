@@ -15,9 +15,8 @@ const App = () => {
       ></input>
       <button
         onClick={() => {
-          window.open(
-            `https://backend-proxy-dev-asia-southeast1-ca53qqytra-as.a.run.app/accounts/wallet-connect/redirect/wc?uri=${value}`
-          );
+          const href = `https://backend-proxy-dev-asia-southeast1-ca53qqytra-as.a.run.app/accounts/wallet-connect/redirect/wc?uri=${value}`;
+          window.open(href, "_self", "noreferrer noopener");
         }}
       >
         Click
