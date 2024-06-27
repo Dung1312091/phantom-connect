@@ -69,6 +69,16 @@ const App = () => {
       >
         Connect 1
       </button>
+      <button
+        style={{
+          marginLeft: 30,
+        }}
+        onClick={() => {
+          window.open("https://metamask.app.link");
+        }}
+      >
+        Metamask
+      </button>
     </div>
   );
 };
