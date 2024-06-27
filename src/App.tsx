@@ -9,7 +9,9 @@ CoreUtil.isAndroid = (): boolean => {
 };
 CoreUtil.openHref = (href: string, target: "_blank" | "_self") => {
   console.log(target);
-  (window as any).Telegram.WebApp.openLink(href);
+  console.log("href--------------------------------", href);
+  // (window as any).Telegram.WebApp.openLink(href);
+  window.open("https://metamask.app.link");
 };
 
 const App = () => {
