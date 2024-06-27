@@ -12,6 +12,9 @@ CoreUtil.isIos = (): boolean => {
 CoreUtil.isHttpUrl = (): boolean => {
   return true;
 };
+CoreUtil.isMobile = (): boolean => {
+  return false;
+};
 const App = () => {
   const [provider, setProvider] = useState<any>(undefined);
   async function onConnect() {
