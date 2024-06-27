@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CoreUtil } from "@walletconnect/modal-core";
 import { useEffect, useState } from "react";
@@ -6,8 +7,8 @@ import { EthereumProvider } from "@walletconnect/ethereum-provider";
 CoreUtil.isAndroid = (): boolean => {
   return false;
 };
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 CoreUtil.openHref = (href: string, target: "_blank" | "_self") => {
+  console.log(target);
   (window as any).Telegram.WebApp.openLink(href);
 };
 
