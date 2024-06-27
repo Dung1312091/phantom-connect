@@ -7,6 +7,9 @@ CoreUtil.isAndroid = (): boolean => {
   return false;
 };
 CoreUtil.isIos = (): boolean => {
+  return false;
+};
+CoreUtil.isHttpUrl = (): boolean => {
   return true;
 };
 const App = () => {
