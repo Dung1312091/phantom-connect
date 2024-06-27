@@ -79,6 +79,18 @@ const App = () => {
       >
         Metamask
       </button>
+      <button
+        style={{
+          marginLeft: 30,
+        }}
+        onClick={() => {
+          window.open(
+            "metamask://wc?uri=wc%3A322375f5a3fff20f1fecd5963c8b353579c2aaec5ef34c1d1c5de4b2de221c55%402%3FexpiryTimestamp%3D1719503597%26relay-protocol%3Dirn%26symKey%3Df0d40dcb19366c40efb7d0f84f82232388604fee843c0420078234e624583816"
+          );
+        }}
+      >
+        Metamask uri
+      </button>
     </div>
   );
 };
