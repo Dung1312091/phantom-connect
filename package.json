@@ -13,6 +13,7 @@
     "@solana/spl-token": "^0.4.6",
     "@solana/web3.js": "^1.91.8",
     "@walletconnect/ethereum-provider": "^2.13.0",
+    "@walletconnect/web3wallet": "^1.12.3",
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "eruda": "^3.0.1",
