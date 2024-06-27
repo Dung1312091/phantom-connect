@@ -6,6 +6,10 @@ import { EthereumProvider } from "@walletconnect/ethereum-provider";
 CoreUtil.isAndroid = (): boolean => {
   return false;
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+CoreUtil.openHref = (href: string, target: "_blank" | "_self") => {
+  (window as any).Telegram.WebApp.openLink(href);
+};
 
 const App = () => {
   const [provider, setProvider] = useState<any>(undefined);
