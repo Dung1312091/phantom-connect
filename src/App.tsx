@@ -6,19 +6,15 @@ import { EthereumProvider } from "@walletconnect/ethereum-provider";
 CoreUtil.isAndroid = (): boolean => {
   return false;
 };
-CoreUtil.isIos = (): boolean => {
-  return false;
-};
-CoreUtil.isHttpUrl = (): boolean => {
-  return true;
-};
-CoreUtil.isMobile = (): boolean => {
-  return false;
-};
+
 const App = () => {
   const [provider, setProvider] = useState<any>(undefined);
   async function onConnect() {
     try {
+      CoreUtil.isAndroid = (): boolean => {
+        return true;
+      };
+
       await provider.connect();
     } catch (error) {
       console.log("onConnect error:", error);
