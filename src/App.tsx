@@ -11,11 +11,12 @@ const App = () => {
   const [provider, setProvider] = useState<any>(undefined);
   async function onConnect() {
     try {
-      CoreUtil.isAndroid = (): boolean => {
-        return true;
-      };
-
       await provider.connect();
+      setTimeout(() => {
+        CoreUtil.isAndroid = (): boolean => {
+          return true;
+        };
+      }, 5000);
     } catch (error) {
       console.log("onConnect error:", error);
       throw new Error("providerClient is not initialized");
@@ -66,7 +67,7 @@ const App = () => {
           onConnect();
         }}
       >
-        Connect
+        Connect 1
       </button>
     </div>
   );
