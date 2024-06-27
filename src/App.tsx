@@ -10,8 +10,8 @@ CoreUtil.isAndroid = (): boolean => {
 CoreUtil.openHref = (href: string, target: "_blank" | "_self") => {
   console.log(target);
   console.log("href--------------------------------", href);
-  // (window as any).Telegram.WebApp.openLink(href);
-  window.open("https://metamask.app.link");
+  href.replace("metamask://", "https://metamask.app.link");
+  window.open(href);
 };
 
 const App = () => {
@@ -19,11 +19,11 @@ const App = () => {
   async function onConnect() {
     try {
       await provider.connect();
-      setTimeout(() => {
-        CoreUtil.isAndroid = (): boolean => {
-          return true;
-        };
-      }, 5000);
+      // setTimeout(() => {
+      //   CoreUtil.isAndroid = (): boolean => {
+      //     return true;
+      //   };
+      // }, 5000);
     } catch (error) {
       console.log("onConnect error:", error);
       throw new Error("providerClient is not initialized");
