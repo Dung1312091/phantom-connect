@@ -12,17 +12,23 @@
   "dependencies": {
     "@solana/spl-token": "^0.4.6",
     "@solana/web3.js": "^1.91.8",
+    "@tanstack/react-query": "^5.49.2",
     "@walletconnect/ethereum-provider": "^2.13.0",
     "@walletconnect/web3wallet": "^1.12.3",
+    "@web3modal/ethers": "^5.0.6",
+    "@web3modal/wagmi": "^5.0.6",
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "eruda": "^3.0.1",
+    "ethers": "^6.13.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1",
     "uuid": "^9.0.1",
-    "vite-plugin-node-polyfills": "^0.22.0"
+    "viem": "^2.17.0",
+    "vite-plugin-node-polyfills": "^0.22.0",
+    "wagmi": "^2.10.9"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

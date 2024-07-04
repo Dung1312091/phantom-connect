@@ -1,104 +1,93 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CoreUtil } from "@walletconnect/modal-core";
-import { useEffect, useState } from "react";
-import { EthereumProvider } from "@walletconnect/ethereum-provider";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  createWeb3Modal,
+  defaultConfig,
+  // useWeb3ModalAccount,
+  // useWeb3ModalProvider,
+} from "@web3modal/ethers/react";
+// import { BrowserProvider } from "ethers";
+// import { useEffect } from "react";
 
-CoreUtil.isAndroid = (): boolean => {
-  return false;
-};
-CoreUtil.openHref = (href: string, target: "_blank" | "_self") => {
-  console.log(target);
-  console.log("href--------------------------------", href);
-  href.replace("metamask://", "https://metamask.app.link");
-  window.open(href);
+// 1. Get projectId
+const projectId = "a518d882993da1eeef8b6c65fab4cfcb";
+
+// 2. Set chains
+const mainnet = {
+  chainId: 1,
+  name: "Ethereum",
+  currency: "ETH",
+  explorerUrl: "https://etherscan.io",
+  rpcUrl: "https://cloudflare-eth.com",
 };
 
-const App = () => {
-  const [provider, setProvider] = useState<any>(undefined);
-  async function onConnect() {
-    try {
-      await provider.connect();
-      // setTimeout(() => {
-      //   CoreUtil.isAndroid = (): boolean => {
-      //     return true;
-      //   };
-      // }, 5000);
-    } catch (error) {
-      console.log("onConnect error:", error);
-      throw new Error("providerClient is not initialized");
-    }
-  }
-  useEffect(() => {
-    async function initProvider() {
-      const provider = await EthereumProvider.init({
-        projectId: "1f9dcc93c364e7e3347f29c20507b3f9",
-        chains: [1],
-        optionalChains: [1, 42161, 137, 10, 43114, 56] as number[],
-        methods: ["personal_sign", "eth_sendTransaction"],
-        showQrModal: true,
-        qrModalOptions: {
-          themeMode: "light",
-          themeVariables: {
-            "--wcm-z-index": "100000",
-          },
-          explorerExcludedWalletIds: [
-            "4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0",
-          ],
-          explorerRecommendedWalletIds: [
-            "c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96",
-            "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369",
-            "225affb176778569276e484e1b92637ad061b01e13a048b35a9d280c3b58970f",
-            "c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a",
-            "ecc4036f814562b41a5268adc86270fba1365471402006302e70169465b7ac18",
-            "ef333840daf915aafdc4a004525502d6d49d77bd9c65e0642dbaefb3c2893bef",
-            "bc949c5d968ae81310268bf9193f9c9fb7bb4e1283e1284af8f2bd4992535fd6",
-          ],
-        },
-        metadata: {
-          name: "Tobi Token Bot",
-          description: "Wallet for WalletConnect",
-          url: "https://app.tobiwallet.app/",
-          icons: ["https://app.tobiwallet.app/icons/favicon.png"],
-        },
-      });
-      setProvider(provider);
-    }
-    initProvider();
-  }, []);
+// 3. Create a metadata object
+const metadata = {
+  name: "My Website",
+  description: "My Website description",
+  url: "https://mywebsite.com", // origin must match your domain & subdomain
+  icons: ["https://avatars.mywebsite.com/"],
+};
+
+// 4. Create Ethers config
+const ethersConfig = defaultConfig({
+  /*Required*/
+  metadata,
+
+  /*Optional*/
+  enableEIP6963: true, // true by default
+  enableInjected: true, // true by default
+  enableCoinbase: true, // true by default
+  rpcUrl: "...", // used for the Coinbase SDK
+  defaultChainId: 1, // used for the Coinbase SDK
+});
+
+// 5. Create a Web3Modal instance
+createWeb3Modal({
+  ethersConfig,
+  chains: [mainnet],
+  projectId,
+  enableAnalytics: true, // Optional - defaults to your Cloud configuration
+});
+export function ConnectButton() {
+  return <w3m-button />;
+}
+// function Test() {
+//   const { address, chainId } = useWeb3ModalAccount();
+//   console.log("🚀 ~ Test ~ chainId:", chainId);
+//   console.log("🚀 ~ Test ~ address:", address);
+//   const { walletProvider } = useWeb3ModalProvider();
+//   useEffect(() => {
+//     if (!walletProvider) return;
+
+//     const ethersProvider = new BrowserProvider(walletProvider as any);
+
+//     if (!ethersProvider) return;
+
+//     ethersProvider.on("display_uri", (uri) => {
+//       console.log("🚀 ~ ethersProvider.on ~ uri:", uri);
+//     });
+//   }, [walletProvider]);
+
+//   async function getBalance() {
+//     // if (!isConnected) throw Error("User disconnected");
+//     // const signer = await ethersProvider.getSigner();
+//     // const balance = await signer.getAddress();
+//     // const x = await ethersProvider.getBalance(address as any);
+//     // console.log("🚀 ~ getBalance ~ x:", x);
+//     // console.log("🚀 ~ getBalance ~ balance:", balance);
+//     // // The Contract object
+//   }
+
+//   return <button onClick={getBalance}>Get User Balance</button>;
+// }
+export default function App() {
   return (
     <div>
-      <h2>Testing</h2>
-      <button
-        onClick={() => {
-          onConnect();
-        }}
-      >
-        Connect 1
-      </button>
-      <button
-        style={{
-          marginLeft: 30,
-        }}
-        onClick={() => {
-          window.open("https://metamask.app.link");
-        }}
-      >
-        Metamask
-      </button>
-      <button
-        style={{
-          marginLeft: 30,
-        }}
-        onClick={() => {
-          window.open(
-            "metamask://wc?uri=wc%3A322375f5a3fff20f1fecd5963c8b353579c2aaec5ef34c1d1c5de4b2de221c55%402%3FexpiryTimestamp%3D1719503597%26relay-protocol%3Dirn%26symKey%3Df0d40dcb19366c40efb7d0f84f82232388604fee843c0420078234e624583816"
-          );
-        }}
-      >
-        Metamask uri
-      </button>
+      <div>
+        <ConnectButton />
+        {/* <Test /> */}
+      </div>
     </div>
   );
-};
-export default App;
+}
