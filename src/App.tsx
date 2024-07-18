@@ -16,14 +16,31 @@ const Test = () => {
       >
         Click
       </button>
+      <button
+        onClick={() => {
+          localStorage.setItem("reInitial", "2");
+          (window as any).Telegram.WebApp.close();
+        }}
+      >
+        Trigger
+      </button>
     </div>
   );
 };
 const App = () => {
   const [show, setShow] = useState(false);
+
+  const [value, setValue] = useState<any>("");
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const x = localStorage.getItem("reInitial");
+      setValue(x);
+      return () => clearInterval(timer);
+    }, 300);
+  }, []);
   return (
     <div>
-      <h3>App</h3>
+      <h3>App:{value}</h3>
       <div>{localStorage.getItem("test")}</div>
       <button onClick={() => setShow(!show)}>Click show</button>
       {show && <Test />}
