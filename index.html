@@ -9,13 +9,14 @@
   <body>
     <div id="root"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
     <script src="//cdn.jsdelivr.net/npm/eruda"></script>
     <script type="module">
       eruda.init();
     </script>
     <script type="module">
       window?.Telegram?.WebApp?.expand();
-      console.log(window?.Telegram?.WebApp?.initDataUnsafe);
+      console.log(window?.Telegram?.WebApp);
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

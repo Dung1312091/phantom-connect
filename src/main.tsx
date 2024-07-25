@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import { Buffer } from "buffer";
 import { ErrorBoundary } from "react-error-boundary";
-
+import "./index.css";
 export const Fallback = ({ error }: any) => {
   return (
     <div>

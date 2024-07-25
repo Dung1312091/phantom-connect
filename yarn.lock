@@ -1725,6 +1725,11 @@
     "@types/babel__core" "^7.20.5"
     react-refresh "^0.14.0"
 
+"@vkruglikov/react-telegram-web-app@^2.1.9":
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/@vkruglikov/react-telegram-web-app/-/react-telegram-web-app-2.1.9.tgz#a116f6a2fd78814f0958da1f8d7c1429d41bb8e3"
+  integrity sha512-m8D5oUuSQN1z8xiG3ufh7tBbWpmp4zLtZv2rNsC2LP0Rp5vJI/hwZNk65h7wLDE740wPlE2R6bOSikm6FdUTtQ==
+
 "@wagmi/connectors@5.0.21":
   version "5.0.21"
   resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-5.0.21.tgz#0fee2d59c764e69804067aa0cb60650fbe6c7227"
@@ -2693,6 +2698,13 @@ caniuse-lite@^1.0.30001587:
     keccak "^3.0.3"
     preact "^10.16.0"
     sha.js "^2.4.11"
+
+ccxt@^4.3.66:
+  version "4.3.66"
+  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-4.3.66.tgz#cf7b00f9f7033a86911be9f3105ffb8a1cea6b76"
+  integrity sha512-acsr5PMe30oxTN9SpUvF5EsyiFwVdca/Uwf3pIKpNLhJQf5gvay0cUXVkvTRj13g6ClAfRgI7ZSMSIyC4UgSHw==
+  dependencies:
+    ws "^8.8.1"
 
 chalk@^2.4.2:
   version "2.4.2"
@@ -5787,6 +5799,11 @@ ws@^8.5.0:
   version "8.17.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.17.0.tgz#d145d18eca2ed25aaf791a183903f7be5e295fea"
   integrity sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==
+
+ws@^8.8.1:
+  version "8.18.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.0.tgz#0d7505a6eafe2b0e712d232b42279f53bc289bbc"
+  integrity sha512-8VbfWfHLbbwu3+N6OKsOMpBdT4kXPDDB9cJk2bJ6mh9ucxdlnNvH1e+roYkKmN9Nxw2yjz7VzeO9oOz2zJ04Pw==
 
 xmlhttprequest-ssl@~2.0.0:
   version "2.0.0"

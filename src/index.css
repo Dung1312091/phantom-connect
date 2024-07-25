@@ -2,3 +2,8 @@ body {
   background-color: white;
   color: black;
 }
+input,
+input:focus {
+  border: none;
+  outline: none;
+}
